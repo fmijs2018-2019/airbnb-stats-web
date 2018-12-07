@@ -14,7 +14,9 @@
     position: absolute;
     display: inline-block;
     width: 25%;
-    height: 100%;
+    bottom: 0px;
     top: 0px;
     right: 0px;
+    padding-top: 60px;
+    text-align: center;
 }

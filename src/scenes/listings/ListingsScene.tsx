@@ -2,8 +2,8 @@ import * as React from 'react';
 
 export default class ListingsScene extends React.Component {
     render() {
-        return <main>
+        return <React.Fragment>
             <div>Listings</div>
-        </main>
+        </React.Fragment>
     }
 }
