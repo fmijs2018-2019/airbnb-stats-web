@@ -1,9 +1,13 @@
-import axios from 'axios';
 import DeckGL, { IconLayer } from 'deck.gl';
 import * as React from 'react';
 import { StaticMap } from 'react-map-gl';
+import { IListingLocation } from 'src/models/listings/ListingLocation';
+import { IListingActionsProps, bindListingActions } from 'src/redux/actions/listingsActions';
 import './DashboardScene.css';
 import mapMarker from './utils/map_marker.png';
+import { IApplicationState } from 'src/redux/store';
+import { connect } from 'react-redux';
+import { Dispatch } from 'redux';
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
@@ -17,36 +21,35 @@ const initialViewState = {
     bearing: 0
 };
 
-// const locations = [
-//     { "latitude": 52.34922738, "longitude": 4.861726985 },
-//     { "latitude": 52.35269364, "longitude": 4.901360933 },
-//     { "latitude": 52.36848062, "longitude": 4.921038854 }
-// ]
-
-const roomTypes = ['Private room', 'Entire home/apt', 'Shared room'];
-
-const getColor = (location: any) => {
-    if (location.roomType === 'Private room') return [255, 0, 0];
-    if (location.roomType === 'Entire home/apt') return [0, 255, 0];
-    if (location.roomType === 'Shared room') return [0, 0, 255];
-    return [255, 255, 255];
+interface DashBoardSceneProps extends IListingActionsProps {
+    locations: IListingLocation[];
 }
 
-interface DashBoardSceneState {
-    locations: [];
-}
-
-export default class DashBoardScene extends React.Component<{}, DashBoardSceneState> {
-    constructor(props: Readonly<{}>) {
+class DashBoardScene extends React.Component<DashBoardSceneProps> {
+    constructor(props: Readonly<DashBoardSceneProps>) {
         super(props);
-        this.state = { locations: [] };
+
+        this.getColor = this.getColor.bind(this);
+    }
+
+    componentDidMount() {
+        this.props.fetchLocations();
+    }
+
+    getColor(location: IListingLocation): number[] {
+        if (location.roomType === 'Private room') return [255, 0, 0];
+        if (location.roomType === 'Entire home/apt') return [0, 255, 0];
+        if (location.roomType === 'Shared room') return [0, 0, 255];
+        return [255, 255, 255];
     }
 
     render() {
+        const { locations } = this.props;
+
         const layers = [
             new IconLayer({
                 id: 'icon-layer-red',
-                data: this.state.locations,
+                data: locations || [],
                 iconAtlas: mapMarker,
                 iconMapping: {
                     marker: {
@@ -63,7 +66,7 @@ export default class DashBoardScene extends React.Component<{}, DashBoardSceneSt
                 getPosition: (d: any) => [d.longitude, d.latitude],
                 getIcon: () => 'marker',
                 getSize: () => 6,
-                getColor,
+                getColor: this.getColor,
             })
         ];
 
@@ -78,15 +81,19 @@ export default class DashBoardScene extends React.Component<{}, DashBoardSceneSt
                         <StaticMap width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
                     </DeckGL>
                 </div>
-                <div className="dashboard-pannel">asdfjlaksdjflkjsdlkfjl
-                <button onClick={() => {
-                        axios.get("http://localhost:8080/listings/locations")
-                            .then((locations) => {
-                                this.setState({ locations: locations.data });
-                            })
-                    }}>Load</button>
-                </div>
+                <div className="dashboard-pannel">Hello Amsterdam!</div>
+
             </React.Fragment>
         );
     }
 }
+
+const mapStateToProps = (state: IApplicationState) => ({
+    locations: state.listings.locations
+});
+
+const mapDispatchToProps = (dispatch: Dispatch) => ({
+    ...bindListingActions(dispatch)
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(DashBoardScene);
