@@ -1,15 +1,25 @@
 import * as React from 'react';
-import { AppBar, Tabs, Tab } from '@material-ui/core';
+import { AppBar, Tabs, Tab, LinearProgress, Theme, createStyles, WithStyles, withStyles } from '@material-ui/core';
 import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
+import { connect } from 'react-redux';
+import { IApplicationState } from 'src/redux/store';
 
-interface INavBarProps extends RouteComponentProps {
+const styles = (theme: Theme) => createStyles({
+    root: {
+        flexGrow: 1,
+        zIndex: 1,
+    }
+})
+
+interface INavBarProps extends RouteComponentProps, WithStyles<typeof styles> {
+    isFetching: boolean
 };
 
 class NavBar extends React.Component<INavBarProps> {
     getValue(): number {
         const path = this.props.history.location.pathname;
 
-        if(path.startsWith("/dashboard")) {
+        if (path.startsWith("/dashboard")) {
             return 0;
         } else if (path.startsWith("/listings")) {
             return 1;
@@ -22,8 +32,11 @@ class NavBar extends React.Component<INavBarProps> {
         return 0;
     }
 
-    render () {
-        return <AppBar position="relative" color="default">
+    render() {
+        const { classes, isFetching } = this.props;
+
+        return <React.Fragment>
+            <AppBar position="relative" color="default">
                 <Tabs
                     value={this.getValue()}
                     onChange={(e: any, value: number) => this.setState({ value })}
@@ -37,7 +50,13 @@ class NavBar extends React.Component<INavBarProps> {
                     <Tab value={3} component={(props: any) => <Link to="/about" {...props}>About</Link>}></Tab>
                 </Tabs>
             </AppBar>
+            {isFetching && <LinearProgress classes={classes} />}
+        </React.Fragment>
     }
 }
 
-export default withRouter(NavBar);
+const mapStateToProps = (state: IApplicationState) => ({
+    isFetching: state.common.isFetching
+})
+
+export default connect(mapStateToProps)(withRouter(withStyles(styles)(NavBar)));
