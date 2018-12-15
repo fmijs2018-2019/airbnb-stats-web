@@ -1,15 +1,14 @@
 import DeckGL, { IconLayer } from 'deck.gl';
 import * as React from 'react';
 import { StaticMap } from 'react-map-gl';
+import { connect } from 'react-redux';
 import { IListingLocation } from 'src/models/listings/ListingLocation';
-import { IListingActionsProps, bindListingActions } from 'src/redux/actions/listingsActions';
+import { INeighborhood } from 'src/models/neighborhoods/neighborhood';
+import { fetchLocations, setNeighborhoodFilter } from 'src/redux/actions/listingsActions';
+import { fetchNeighborhoods } from 'src/redux/actions/neighborhoodsActions';
+import { IApplicationState } from 'src/redux/store';
 import './DashboardScene.css';
 import mapMarker from './utils/map_marker.png';
-import { IApplicationState } from 'src/redux/store';
-import { connect } from 'react-redux';
-import { Dispatch } from 'redux';
-import { INeighborhood } from 'src/models/neighborhoods/neighborhood';
-import { INeighborhoodsActionsProps, bindNeighborhoodsActions } from 'src/redux/actions/neighborhoodsActions';
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
@@ -17,15 +16,24 @@ const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJl
 // Initial viewport settings
 const initialViewState = {
     longitude: 4.899431,
-    latitude: 52.379189,
+    latitude: 52.365,
     zoom: 11,
     pitch: 0,
     bearing: 0
 };
 
-interface DashBoardSceneProps extends IListingActionsProps, INeighborhoodsActionsProps {
-    locations: IListingLocation[];
-    neighborhoods: INeighborhood[];
+interface DashBoardSceneStateProps {
+    locations: IListingLocation[] | null;
+    neighborhoods: INeighborhood[] | null;
+}
+
+interface DashBardSceneActionsProps {
+    fetchNeighborhoods: () => Promise<INeighborhood[]>;
+    fetchLocations: () => Promise<IListingLocation[]>;
+    setNeighborhoodFilter: (filter: number | null) => void;
+}
+
+interface DashBoardSceneProps extends DashBoardSceneStateProps, DashBardSceneActionsProps {
 }
 
 class DashBoardScene extends React.Component<DashBoardSceneProps> {
@@ -42,43 +50,46 @@ class DashBoardScene extends React.Component<DashBoardSceneProps> {
     }
 
     getColor(location: IListingLocation): number[] {
-        if (location.roomType === 'Private room') return [247, 19, 72];
-        if (location.roomType === 'Entire home/apt') return [127, 239, 217];
-        if (location.roomType === 'Shared room') return [0, 107, 247];
+        if (location.roomTypeId === 1) return [247, 19, 72];
+        if (location.roomTypeId === 2) return [127, 239, 217];
+        if (location.roomTypeId === 3) return [0, 107, 247];
         return [255, 255, 255];
     }
 
     getLayers(): any[] {
         const { locations } = this.props;
+        const iconLayer = location && new IconLayer({
+            id: 'icon-layer-red',
+            pickable: true,
+            data: locations,
+            iconAtlas: mapMarker,
+            iconMapping: {
+                marker: {
+                    "x": 150,
+                    "y": 150,
+                    "width": 400,
+                    "height": 400,
+                    "mask": true
+                }
+            },
+            sizeScale: 2,
+            getPosition: (d: any) => [d.longitude, d.latitude],
+            getIcon: () => 'marker',
+            getSize: () => 7,
+            getColor: this.getColor,
+        })
+
         return [
-            new IconLayer({
-                id: 'icon-layer-red',
-                pickable: true,
-                data: locations && locations.sort((a, b) => {
-                    return a.roomType.localeCompare(b.roomType);
-                }) || [],
-                iconAtlas: mapMarker,
-                iconMapping: {
-                    marker: {
-                        "x": 150,
-                        "y": 150,
-                        "width": 400,
-                        "height": 400,
-                        "mask": true
-                    }
-                },
-                sizeScale: 2,
-                getPosition: (d: any) => [d.longitude, d.latitude],
-                getIcon: () => 'marker',
-                getSize: () => 10,
-                // opacity: 5,
-                getColor: this.getColor,
-            })
+            iconLayer
         ];
     }
 
     setNeighborhood(neighborhood: string) {
-        this.props.setNeighborhoodFilter(neighborhood);
+        let neighborhoodFilter: number | null = null;
+        if(neighborhood !== '') {
+            neighborhoodFilter = +neighborhood;
+        }
+        this.props.setNeighborhoodFilter(neighborhoodFilter);
         this.props.fetchLocations();
     }
 
@@ -95,13 +106,13 @@ class DashBoardScene extends React.Component<DashBoardSceneProps> {
                         controller={true}
                         layers={layers}
                     >
-                        <StaticMap width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
+                        <StaticMap preventStyleDiffing width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
                     </DeckGL>
                 </div>
                 <div className="dashboard-pannel">Hello Amsterdam!
                     {neighborhoods && <select onChange={e => this.setNeighborhood(e.target.value)}>
-                        <option value="">All</option>
-                        {neighborhoods.map(n => <option key={n.id } value={n.name}>{n.name}</option>)}
+                        <option value="">Neighborhoods</option>
+                        {neighborhoods.map(n => <option key={n.id} value={n.id}>{n.name}</option>)}
                     </select>}
                 </div>
             </React.Fragment>
@@ -111,12 +122,13 @@ class DashBoardScene extends React.Component<DashBoardSceneProps> {
 
 const mapStateToProps = (state: IApplicationState) => ({
     locations: state.locations.list,
-    neighborhoods: state.neighborhoods.list
+    neighborhoods: state.neighborhoods.list,
 });
 
-const mapDispatchToProps = (dispatch: Dispatch) => ({
-    ...bindListingActions(dispatch),
-    ...bindNeighborhoodsActions(dispatch)
+const mapDispatchToProps = (dispatch: any) => ({
+    fetchLocations: (): Promise<IListingLocation[]> => dispatch(fetchLocations()),
+    fetchNeighborhoods: (): Promise<INeighborhood[]> => dispatch(fetchNeighborhoods()), 
+    setNeighborhoodFilter: (filter: number | null): void => dispatch(setNeighborhoodFilter(filter)),
 });
 
-export default connect(mapStateToProps, mapDispatchToProps)(DashBoardScene);
+export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps>(mapStateToProps, mapDispatchToProps)(DashBoardScene);

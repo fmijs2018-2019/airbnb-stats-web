@@ -7,7 +7,7 @@
     display: inline-block;
     width: 75%;   
     height: 100%;
-    top: 0px;
+    top: 50px;
 }
   
 .dashboard-pannel {
@@ -17,6 +17,6 @@
     bottom: 0px;
     top: 0px;
     right: 0px;
-    padding-top: 60px;
+    padding-top: 50px;
     text-align: center;
 }

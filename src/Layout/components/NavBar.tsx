@@ -8,6 +8,7 @@ const styles = (theme: Theme) => createStyles({
     root: {
         flexGrow: 1,
         zIndex: 1,
+        height: '3px',
     }
 })
 
@@ -59,4 +60,7 @@ const mapStateToProps = (state: IApplicationState) => ({
     isFetching: state.common.isFetching
 })
 
-export default connect(mapStateToProps)(withRouter(withStyles(styles)(NavBar)));
+const navWithStyles = withStyles(styles)(NavBar);
+const navWithRouter = withRouter(navWithStyles);
+
+export default connect(mapStateToProps)(navWithRouter);

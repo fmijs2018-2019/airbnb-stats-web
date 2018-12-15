@@ -1,9 +1,10 @@
 import { ILocationsState, initialLocationsState } from './state/locationsState';
-import { createStore, applyMiddleware } from 'redux';
+import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './rootReducer';
 import thunk from 'redux-thunk'
 import { INeighborhoodsState, initialNeighborhoodsState } from './state/neighborhoodsState';
 import { ICommonState, initialCommonState } from './state/commonState';
+import { composeWithDevTools } from 'redux-devtools-extension';
 
 export interface IApplicationState {
     locations: ILocationsState,
@@ -20,5 +21,8 @@ export const initialAppState: IApplicationState = {
 export default createStore(
     rootReducer,
     initialAppState,
-    applyMiddleware(thunk),
+    composeWithDevTools(
+        applyMiddleware(thunk),
+    )
 );
+

@@ -1,8 +1,8 @@
+import { Dispatch } from 'redux';
+import { getLocations } from 'src/api/listings';
+import { IError } from 'src/models/Error';
 import { IListingLocation } from 'src/models/listings/ListingLocation';
 import { IReduxAction } from '../../models/ReduxAction';
-import { IError } from 'src/models/Error';
-import { bindActionCreators, Dispatch } from 'redux';
-import { getLocations } from 'src/api/listings';
 import { IApplicationState } from '../store';
 import { isFetching } from './commonActions';
 
@@ -31,7 +31,7 @@ export const fetchLocations = () => {
     }
 }
 
-export const setNeighborhoodFilter = (filter: string): IReduxAction => ({
+export const setNeighborhoodFilter = (filter: number | null = null): IReduxAction => ({
     type: SET_NEIGHBORHOOD_FILTER,
     payload: filter
 })
@@ -45,23 +45,3 @@ export const fetchLocationsError = (error: IError): IReduxAction => ({
     type: FETCH_LOCATIONS_ERROR,
     payload: error,
 })
-
-export const listingActions = {
-    fetchLocations,
-    fetchLocationsSuccess,
-    fetchLocationsError,
-    setNeighborhoodFilter,
-}
-
-export interface IListingActionsProps {
-    fetchLocations: () => Promise<IListingLocation[]>;
-    fetchLocationsSuccess: (locations: IListingLocation[]) => void;
-    fetchLocationsError: (error: IError) => void;
-    setNeighborhoodFilter: (filter: string) => void;
-}
-
-export const bindListingActions = (dispatch: Dispatch): IListingActionsProps => {
-    return bindActionCreators({
-        ...listingActions
-    }, dispatch) as any;
-}

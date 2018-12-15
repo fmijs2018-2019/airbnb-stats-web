@@ -3,7 +3,7 @@ import { IError } from 'src/models/Error';
 
 export interface ILocationsState {
     list: IListingLocation[] | null;
-    neighborhoodFilter: string | null;
+    neighborhoodFilter: number | null;
     fetchListError: IError | null; 
 }
 
