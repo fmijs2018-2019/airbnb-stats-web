@@ -3,10 +3,12 @@ import { IError } from 'src/models/Error';
 
 export interface INeighborhoodsState {
     list: INeighborhood[] | null,
-    fetchListError: IError | null
+    item: INeighborhood | null,
+    fetchError: IError | null
 }
 
 export const initialNeighborhoodsState: INeighborhoodsState = {
     list: null,
-    fetchListError: null
+    item: null,
+    fetchError: null
 }

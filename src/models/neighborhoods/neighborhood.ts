@@ -1,5 +1,6 @@
 import { IIdentifiable } from '../Identifiable';
 
 export interface INeighborhood extends IIdentifiable{
-    name: string
+    name: string,
+    geoJson?: object | null
 }
