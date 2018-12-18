@@ -1,9 +1,9 @@
-import { INeighborhood } from 'src/models/neighborhoods/neighborhood';
+import { INeighborhood, INeighborhoodDetailed } from 'src/models/neighborhoods/neighborhood';
 import { IError } from 'src/models/Error';
 
 export interface INeighborhoodsState {
     list: INeighborhood[] | null,
-    item: INeighborhood | null,
+    item: INeighborhoodDetailed | null,
     fetchError: IError | null
 }
 

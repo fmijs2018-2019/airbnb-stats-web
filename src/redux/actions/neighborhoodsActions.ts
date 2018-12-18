@@ -1,7 +1,7 @@
 import { Dispatch } from 'redux';
 import { getNeighborhoods, getGeoJson } from 'src/api/neighborhoods';
 import { IError } from 'src/models/Error';
-import { INeighborhood } from 'src/models/neighborhoods/neighborhood';
+import { INeighborhood, INeighborhoodDetailed } from 'src/models/neighborhoods/neighborhood';
 import { IReduxAction } from 'src/models/ReduxAction';
 import { IApplicationState } from '../store';
 
@@ -38,7 +38,7 @@ export const FETCH_ITEM_SUCCESS = 'FETCH_ITEM_SUCCESS';
 export const FETCH_ITEM_ERROR = 'FETCH_ITEM_ERROR';
 
 export const fetchNeighborhoodItem = () => {
-    return function (dispatch: Dispatch, getState: () => IApplicationState): Promise<INeighborhood> {
+    return function (dispatch: Dispatch, getState: () => IApplicationState): Promise<INeighborhoodDetailed> {
         const filter = getState().locations.neighborhoodFilter;
 
         const promise = getGeoJson(filter);
@@ -55,7 +55,7 @@ export const fetchNeighborhoodItem = () => {
     }
 }
 
-export const fetchItemSuccess = (item: INeighborhood | null) => ({
+export const fetchItemSuccess = (item: INeighborhoodDetailed) => ({
     type: FETCH_ITEM_SUCCESS,
     payload: item
 })
