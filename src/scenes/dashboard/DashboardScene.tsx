@@ -1,6 +1,6 @@
 import DeckGL, { IconLayer, GeoJsonLayer } from 'deck.gl';
 import * as React from 'react';
-import { StaticMap } from 'react-map-gl';
+import { StaticMap, ViewState, FlyToInterpolator, MapController, TransitionInterpolator } from 'react-map-gl';
 import { connect } from 'react-redux';
 import { IListingLocation } from 'src/models/listings/ListingLocation';
 import { INeighborhood, INeighborhoodDetailed } from 'src/models/neighborhoods/neighborhood';
@@ -15,14 +15,11 @@ import { Select } from '@material-ui/core';
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
 
-// Initial viewport settings
-const initialViewState = {
-    longitude: 4.899431,
-    latitude: 52.365,
-    zoom: 11,
-    pitch: 0,
-    bearing: 0
-};
+interface IViewState extends ViewState {
+    transitionDuration: number,
+    transitionInterpolator: TransitionInterpolator
+}
+
 interface DashBoardSceneStateProps {
     locations: IListingLocation[] | null;
     neighborhoods: INeighborhood[] | null;
@@ -36,13 +33,30 @@ interface DashBardSceneActionsProps {
     fetchNeighborhoodItem: () => Promise<INeighborhoodDetailed>;
 }
 
+interface DashBoardSceneState {
+    viewState: IViewState
+}
+
 interface DashBoardSceneProps extends DashBoardSceneStateProps, DashBardSceneActionsProps {
 }
 
-class DashBoardScene extends React.Component<DashBoardSceneProps> {
+class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardSceneState> {
     constructor(props: Readonly<DashBoardSceneProps>) {
         super(props);
 
+        this.state = {
+            viewState: {
+                longitude: 4.899431,
+                latitude: 52.365,
+                zoom: 11,
+                pitch: 0,
+                bearing: 0,
+                transitionDuration: 3000,
+                transitionInterpolator: new FlyToInterpolator()
+            }
+        }
+
+        this.onViewStateChange = this.onViewStateChange.bind(this);
         this.getColor = this.getColor.bind(this);
         this.setNeighborhood = this.setNeighborhood.bind(this);
     }
@@ -87,16 +101,18 @@ class DashBoardScene extends React.Component<DashBoardSceneProps> {
             id: 'geojson-layer',
             data: geoJson,
             pickable: true,
-            stroked: false,
+            stroked: true,
             filled: true,
-            extruded: true,
-            lineWidthScale: 20,
+            extruded: false,
+            // lineWidthScale: 20,
             lineWidthMinPixels: 2,
-            getFillColor: [160, 160, 180, 200],
-            //getLineColor: d => colorToRGBArray(d.properties.color),
-            getRadius: 100,
+            getFillColor: [210, 210, 210, 100],
+            lineJointRounded: true,
+            getLineColor: [100, 100, 100, 200],
+            fp64: true,
+            // getRadius: 100,
             getLineWidth: 1,
-            getElevation: 30,
+            // getElevation: 30,
             // onHover: ({ object, x, y }) => {
             //     const tooltip = object.properties.name || object.properties.station;
             //     /* Update tooltip
@@ -111,6 +127,10 @@ class DashBoardScene extends React.Component<DashBoardSceneProps> {
         ];
     }
 
+    onViewStateChange({ viewState }: { viewState: IViewState }) {
+        this.setState({ viewState: { ...viewState } });
+    }
+
     setNeighborhood(neighborhood: string) {
         let neighborhoodFilter: number | null = null;
         if (neighborhood !== '') {
@@ -119,7 +139,21 @@ class DashBoardScene extends React.Component<DashBoardSceneProps> {
 
         this.props.setNeighborhoodFilter(neighborhoodFilter);
         this.props.fetchLocations();
-        this.props.fetchNeighborhoodItem();
+        this.props.fetchNeighborhoodItem()
+            .then(item => {
+                this.setState({
+                    viewState: {
+                        ...this.state.viewState,
+                        zoom: 13,
+                        longitude: item.centerLongitude,
+                        latitude: item.centerLatitude,
+                        transitionDuration: 3000,
+                        transitionInterpolator: new FlyToInterpolator()
+                    }
+                });
+                console.log('pesho');
+                console.log(this.state.viewState);
+            });
     }
 
     render() {
@@ -131,11 +165,12 @@ class DashBoardScene extends React.Component<DashBoardSceneProps> {
             <React.Fragment>
                 <div className="dashboard">
                     <DeckGL
-                        initialViewState={initialViewState}
-                        controller={true}
+                        viewState={this.state.viewState}
                         layers={layers}
+                        controller={true}
+                        onViewStateChange={this.onViewStateChange}
                     >
-                        <StaticMap preventStyleDiffing width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
+                        <StaticMap width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
                     </DeckGL>
                 </div>
                 <div className="dashboard-pannel">Hello Amsterdam!
