@@ -5,17 +5,21 @@
 .dashboard {
     position: absolute;
     display: inline-block;
-    width: 75%;   
-    top: 50px;
+    width: 100%;   
+    top: 0;
     bottom: 0px;
 }
   
 .dashboard-pannel {
+    width: 300px;
+    background: #fff;
+    box-shadow: 0 0 4px rgba(0,0,0,.15);
+    margin: 24px;
+    padding: 12px 24px;
     position: absolute;
-    display: inline-block;
-    width: 25%;
-    bottom: 0px;
+    right: 0;
+    outline: none;
+    cursor: auto;
     top: 50px;
-    right: 0px;
-    text-align: center;
+    bottom: 0;
 }

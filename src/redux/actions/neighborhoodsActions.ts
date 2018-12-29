@@ -1,9 +1,10 @@
 import { Dispatch } from 'redux';
-import { getNeighborhoods, getGeoJson } from 'src/api/neighborhoods';
+import { getNeighborhoods, getReports } from 'src/api/neighborhoods';
 import { IError } from 'src/models/Error';
-import { INeighborhood, INeighborhoodDetailed } from 'src/models/neighborhoods/neighborhood';
+import { INeighborhood, IReportsData } from 'src/models/neighborhoods/neighborhood';
 import { IReduxAction } from 'src/models/ReduxAction';
 import { IApplicationState } from '../store';
+import * as _ from 'lodash';
 
 export const FETCH_NEIGHBORHOODS_SUCCESS = 'FETCH_NEIGHBORHOODS_SUCCESS';
 export const FETCH_NEIGHBORHOODS_ERROR = 'FETCH_NEIGHBORHOODS_ERROR';
@@ -14,7 +15,7 @@ export const fetchNeighborhoods = () => {
 
         promise
             .then((data: INeighborhood[]) => {
-                dispatch(fetchNeighborhoodsSuccess(data))
+                dispatch(fetchNeighborhoodsSuccess(_.keyBy(data, 'id')))
             })
             .catch((error: IError) => {
                 dispatch(fetchNeighborhoodsError(error))
@@ -24,7 +25,7 @@ export const fetchNeighborhoods = () => {
     }
 }
 
-export const fetchNeighborhoodsSuccess = (neighborhoods: INeighborhood[]): IReduxAction => ({
+export const fetchNeighborhoodsSuccess = (neighborhoods: _.Dictionary<INeighborhood>): IReduxAction => ({
     type: FETCH_NEIGHBORHOODS_SUCCESS,
     payload: neighborhoods
 })
@@ -34,33 +35,31 @@ export const fetchNeighborhoodsError = (error: IError): IReduxAction => ({
     payload: error
 })
 
-export const FETCH_ITEM_SUCCESS = 'FETCH_ITEM_SUCCESS';
-export const FETCH_ITEM_ERROR = 'FETCH_ITEM_ERROR';
+export const FETCH_REPORTS_SUCCESS = 'FETCH_REPORTS_SUCCESS';
+export const FETCH_REPORTS_ERROR = 'FETCH_REPORTS_ERROR';
 
-export const fetchNeighborhoodItem = () => {
-    return function (dispatch: Dispatch, getState: () => IApplicationState): Promise<INeighborhoodDetailed> {
-        const filter = getState().locations.neighborhoodFilter;
-
-        const promise = getGeoJson(filter);
+export const fetchReports = (neighborhoodId: number | null = null) => {
+    return function (dispatch: Dispatch): Promise<IReportsData> {
+        const promise = getReports(neighborhoodId);
 
         promise
             .then((data) => {
-                dispatch(fetchItemSuccess(data));
+                dispatch(fetchReportsSuccess(data));
             })
             .catch((error: IError) => {
-                dispatch(fetchItemError(error));
+                dispatch(fetchReportsError(error));
             });
 
         return promise;
     }
-}
+};
 
-export const fetchItemSuccess = (item: INeighborhoodDetailed) => ({
-    type: FETCH_ITEM_SUCCESS,
-    payload: item
-})
+export const fetchReportsSuccess = (reports: IReportsData) => ({
+    type: FETCH_REPORTS_SUCCESS,
+    payload: reports
+});
 
-export const fetchItemError = (error: IError) => ({
-    type: FETCH_ITEM_ERROR,
+export const fetchReportsError = (error: IError) => ({
+    type: FETCH_REPORTS_ERROR,
     payload: error
-})
+});

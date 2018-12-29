@@ -5,10 +5,21 @@ import { connect } from 'react-redux';
 import { IApplicationState } from 'src/redux/store';
 
 const styles = (theme: Theme) => createStyles({
-    root: {
+    navbar: {
+        backgroundColor: 'black',
+        opacity: 0.7,
+        color: 'white',
+    },
+    progress: {
         flexGrow: 1,
         zIndex: 1,
         height: '3px',
+    },
+    tab: {
+        color: 'white',
+    },
+    indicator: {
+        backgroundColor: 'white',
     }
 })
 
@@ -37,21 +48,20 @@ class NavBar extends React.Component<INavBarProps> {
         const { classes, isFetching } = this.props;
 
         return <React.Fragment>
-            <AppBar position="relative" color="default">
+            <AppBar className={classes.navbar} position="relative" >
                 <Tabs
+                    classes={{ indicator: classes.indicator }}
                     value={this.getValue()}
                     onChange={(e: any, value: number) => this.setState({ value })}
-                    indicatorColor="primary"
-                    textColor="primary"
                     centered
                 >
-                    <Tab value={0} component={(props: any) => <Link to="/dashboard" {...props}>Dashboard</Link>}></Tab>
-                    <Tab value={1} component={(props: any) => <Link to="/listings" {...props}>Listings</Link>}></Tab>
-                    <Tab value={2} component={(props: any) => <Link to="/reports" {...props}>Reports</Link>}></Tab>
-                    <Tab value={3} component={(props: any) => <Link to="/about" {...props}>About</Link>}></Tab>
+                    <Tab classes={{ root: classes.tab }} value={0} component={(props: any) => <Link to="/dashboard" {...props}>Dashboard</Link>}></Tab>
+                    <Tab classes={{ root: classes.tab }} value={1} component={(props: any) => <Link to="/listings" {...props}>Listings</Link>}></Tab>
+                    <Tab classes={{ root: classes.tab }} value={2} component={(props: any) => <Link to="/reports" {...props}>Reports</Link>}></Tab>
+                    <Tab classes={{ root: classes.tab }} value={3} component={(props: any) => <Link to="/about" {...props}>About</Link>}></Tab>
                 </Tabs>
             </AppBar>
-            {isFetching && <LinearProgress classes={classes} />}
+            {isFetching && <LinearProgress classes={{ root: classes.progress }} />}
         </React.Fragment>
     }
 }

@@ -3,23 +3,21 @@ import { getLocations } from 'src/api/listings';
 import { IError } from 'src/models/Error';
 import { IListingLocation } from 'src/models/listings/ListingLocation';
 import { IReduxAction } from '../../models/ReduxAction';
-import { IApplicationState } from '../store';
 import { isFetching } from './commonActions';
+import * as _ from 'lodash';
 
 export const FETCH_LOCATIONS_SUCCESS = 'FETCH_LOCATIONS_SUCCESS';
 export const FETCH_LOCATIONS_ERROR = 'FETCH_LOCATIONS_ERROR';
-export const SET_NEIGHBORHOOD_FILTER = 'SET_NEIGHBORHOOD_FILTER';
 
 export const fetchLocations = () => {
-    return function (dispatch: Dispatch, getState: () => IApplicationState): Promise<IListingLocation[]> {
+    return function (dispatch: Dispatch): Promise<IListingLocation[]> {
         dispatch(isFetching(true));
 
-        const filter = getState().locations.neighborhoodFilter;
-        const promise = getLocations(filter);
+        const promise = getLocations();
 
         promise
             .then((data: IListingLocation[]) => {
-                dispatch(fetchLocationsSuccess(data));
+                dispatch(fetchLocationsSuccess(_.groupBy(data, 'neighborhoodId')));
                 dispatch(isFetching(false));
             })
             .catch((error: IError) => {
@@ -31,12 +29,7 @@ export const fetchLocations = () => {
     }
 }
 
-export const setNeighborhoodFilter = (filter: number | null = null): IReduxAction => ({
-    type: SET_NEIGHBORHOOD_FILTER,
-    payload: filter
-})
-
-export const fetchLocationsSuccess = (locations: IListingLocation[]): IReduxAction => ({
+export const fetchLocationsSuccess = (locations: _.Dictionary<IListingLocation[]>): IReduxAction => ({
     type: FETCH_LOCATIONS_SUCCESS,
     payload: locations,
 })
