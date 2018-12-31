@@ -14,6 +14,6 @@ export interface IReportsData {
 }
 
 export interface IDataUnit {
-    name: string | number,
+    name: string,
     value: number
 }

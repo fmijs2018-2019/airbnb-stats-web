@@ -10,12 +10,12 @@ export const FETCH_NEIGHBORHOODS_SUCCESS = 'FETCH_NEIGHBORHOODS_SUCCESS';
 export const FETCH_NEIGHBORHOODS_ERROR = 'FETCH_NEIGHBORHOODS_ERROR';
 
 export const fetchNeighborhoods = () => {
-    return function (dispatch: Dispatch): Promise<INeighborhood[]> {
+    return function (dispatch: Dispatch): Promise<_.Dictionary<INeighborhood>> {
         const promise = getNeighborhoods();
 
         promise
-            .then((data: INeighborhood[]) => {
-                dispatch(fetchNeighborhoodsSuccess(_.keyBy(data, 'id')))
+            .then((data: _.Dictionary<INeighborhood>) => {
+                dispatch(fetchNeighborhoodsSuccess(data))
             })
             .catch((error: IError) => {
                 dispatch(fetchNeighborhoodsError(error))
@@ -38,7 +38,7 @@ export const fetchNeighborhoodsError = (error: IError): IReduxAction => ({
 export const FETCH_REPORTS_SUCCESS = 'FETCH_REPORTS_SUCCESS';
 export const FETCH_REPORTS_ERROR = 'FETCH_REPORTS_ERROR';
 
-export const fetchReports = (neighborhoodId: number | null = null) => {
+export const fetchReports = (neighborhoodId: number) => {
     return function (dispatch: Dispatch): Promise<IReportsData> {
         const promise = getReports(neighborhoodId);
 

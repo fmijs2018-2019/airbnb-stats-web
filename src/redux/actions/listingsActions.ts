@@ -10,14 +10,14 @@ export const FETCH_LOCATIONS_SUCCESS = 'FETCH_LOCATIONS_SUCCESS';
 export const FETCH_LOCATIONS_ERROR = 'FETCH_LOCATIONS_ERROR';
 
 export const fetchLocations = () => {
-    return function (dispatch: Dispatch): Promise<IListingLocation[]> {
+    return function (dispatch: Dispatch): Promise<_.Dictionary<IListingLocation[]>> {
         dispatch(isFetching(true));
 
         const promise = getLocations();
 
         promise
-            .then((data: IListingLocation[]) => {
-                dispatch(fetchLocationsSuccess(_.groupBy(data, 'neighborhoodId')));
+            .then((data: _.Dictionary<IListingLocation[]>) => {
+                dispatch(fetchLocationsSuccess(data));
                 dispatch(isFetching(false));
             })
             .catch((error: IError) => {

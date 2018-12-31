@@ -12,53 +12,37 @@ import mapMarker from './utils/map_marker.png';
 import * as _ from 'lodash';
 import Close from '@material-ui/icons/Close';
 import { WithStyles, withStyles, Theme, createStyles } from '@material-ui/core';
-import { PieChart, Pie, Cell } from 'recharts';
-import { any, object } from 'prop-types';
+import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
+import { Charts } from './charts';
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
 
 const colors = [
-    [65, 182, 196, 100],
-    [127, 205, 187, 100],
-    [199, 233, 180, 100],
-    [237, 248, 177, 100],
-    [255, 255, 204, 100],
-    [255, 237, 160, 100],
-    [254, 217, 118, 100],
-    [254, 178, 76, 100],
-    [253, 141, 60, 100],
-    [252, 78, 42, 100],
-    [227, 26, 28, 100],
-    [189, 0, 38, 100],
-    [128, 0, 38, 100],
-    [65, 18, 196, 100],
-    [66, 107, 244, 100],
-    [109, 240, 255, 100],
-    [102, 56, 201, 100],
-    [162, 229, 96, 100],
-    [219, 167, 160, 100],
-    [90, 232, 90, 100],
-    [211, 183, 80, 100],
-    [191, 80, 210, 100],
-    [1, 78, 42, 100],
-    // [227, 26, 28, 100],
-    // [189, 0, 38, 100],
-    // [128, 0, 38, 100]
+    [65, 182, 196, 255],
+    [127, 205, 187, 255],
+    [199, 233, 180, 255],
+    [237, 248, 177, 255],
+    [255, 255, 204, 255],
+    [255, 237, 160, 255],
+    [254, 217, 118, 255],
+    [254, 178, 76, 255],
+    [253, 141, 60, 255],
+    [252, 78, 42, 255],
+    [227, 26, 28, 255],
+    [189, 0, 38, 255],
+    [128, 0, 38, 255],
+    [65, 18, 196, 255],
+    [66, 107, 244, 255],
+    [109, 240, 255, 255],
+    [102, 56, 201, 255],
+    [162, 229, 96, 255],
+    [219, 167, 160, 255],
+    [90, 232, 90, 255],
+    [211, 183, 80, 255],
+    [191, 80, 210, 255],
+    [1, 78, 42, 255],
 ];
-
-const colorsStrings = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
-    '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
-    '#80B300', '#809900', '#E6B3B3', '#6680B3', '#66991A',
-    '#FF99E6', '#CCFF1A', '#FF1A66', '#E6331A', '#33FFCC',
-    '#66994D', '#B366CC', '#4D8000', '#B33300', '#CC80CC',
-    '#66664D', '#991AFF', '#E666FF', '#4DB3FF', '#1AB399',
-    '#E666B3', '#33991A', '#CC9999', '#B3B31A', '#00E680',
-    '#4D8066', '#809980', '#E6FF80', '#1AFF33', '#999933',
-    '#FF3380', '#CCCC00', '#66E64D', '#4D80CC', '#9900B3',
-    '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
-
-interface IFeature { object: { properties: { id: number } }, coordinate: number[] }
 
 interface IViewState extends ViewState {
     transitionDuration?: number,
@@ -74,13 +58,24 @@ interface DashBoardSceneStateProps {
 interface DashBardSceneActionsProps {
     fetchNeighborhoods: () => Promise<INeighborhood[]>;
     fetchLocations: () => Promise<IListingLocation[]>;
-    fetchReports: (id: number | null) => Promise<IReportsData>;
+    fetchReports: (id: number) => Promise<IReportsData>;
 }
+
+interface IHoveredInfo {
+    object: {
+        message: string,
+        properties: { id: number, neighbourhood: string }
+    },
+    x: string,
+    y: string,
+    coordinate: number[]
+};
 
 interface DashBoardSceneState {
     viewState: IViewState,
     selectedNeighborhoodId: number | null,
-    hoveredNeighborhoodId: number | null
+    hoveredNeighborhoodId: number | null,
+    hoveredItemInfo: IHoveredInfo | null
 }
 
 const styles = (theme: Theme) => createStyles({
@@ -107,7 +102,7 @@ const initialViewState: IViewState = {
     zoom: 11,
     pitch: 0,
     bearing: 0,
-    transitionDuration: 3000,
+    transitionDuration: 1000,
     transitionInterpolator: new FlyToInterpolator()
 }
 
@@ -118,7 +113,8 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
         this.state = {
             viewState: initialViewState,
             selectedNeighborhoodId: null,
-            hoveredNeighborhoodId: null
+            hoveredNeighborhoodId: null,
+            hoveredItemInfo: null
         }
 
         this.onViewStateChange = this.onViewStateChange.bind(this);
@@ -126,6 +122,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
         this.hoverHandler = this.hoverHandler.bind(this);
         this.clickHandler = this.clickHandler.bind(this);
         this.getIconColor = this.getIconColor.bind(this);
+        this.renderTooltip = this.renderTooltip.bind(this);
     }
 
     componentDidMount() {
@@ -152,11 +149,12 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     "mask": true
                 }
             },
-            sizeScale: 2,
-            getPosition: (d: any) => [d.longitude, d.latitude],
+            sizeScale: 4,
+            getPosition: (d: IListingLocation) => [d.lon, d.lat],
             getIcon: () => 'marker',
             getSize: () => 7,
             getColor: this.getIconColor,
+            visible: selectedId,
         });
 
         const geoJsonAllLayer = !selectedId && new GeoJsonLayer({
@@ -166,102 +164,128 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             stroked: true,
             filled: true,
             extruded: false,
-            lineWidthMinPixels: 2,
             getFillColor: (object: { properties: { id: number } }) => colors[object.properties.id],
+            opacity: 0.15,
             lineJointRounded: true,
-            getLineColor: [196, 196, 196, 200],
-            fp64: true,
-            getLineWidth: 1,
+            getLineColor: [196, 196, 196, 255],
+            getLineWidth: 25,
             onHover: this.hoverHandler,
-            onClick: this.clickHandler
+            onClick: this.clickHandler,
+            visible: !selectedId
         });
 
         const selectedNgGeoJsonLayer = selectedId && neighborhoods && new GeoJsonLayer({
-            id: 'geojson-neighborhood-layer',
+            id: 'selected-neighborhood-layer',
             data: neighborhoods[selectedId] && neighborhoods[selectedId].geoJson,
-            pickable: true,
             stroked: true,
             filled: false,
             extruded: false,
-            lineWidthMinPixels: 2,
             getFillColor: [0, 0, 0, 0],
             lineJointRounded: true,
             getLineColor: [255, 255, 255, 255],
-            fp64: true,
-            getLineWidth: 25,
+            getLineWidth: 10,
+            visible: selectedId
         });
 
         const hoveredNgGeoJsonLayer = hoveredId && !selectedId && neighborhoods && new GeoJsonLayer({
-            id: 'geojson-neighborhood-layer',
+            id: 'hovered-neighborhood-layer',
             data: neighborhoods[hoveredId] && neighborhoods[hoveredId].geoJson,
-            pickable: true,
             stroked: true,
             filled: true,
             extruded: false,
             lineWidthMinPixels: 2,
-            getFillColor: (object: { properties: { id: number } }) => _.concat(_.take(colors[object.properties.id], 3), 220),
+            getFillColor: (object: { properties: { id: number } }) => colors[object.properties.id],
+            opacity: 2,
             lineJointRounded: true,
             getLineColor: [255, 255, 255, 255],
-            fp64: true,
             getLineWidth: 25,
+            visible: !selectedId
         });
 
-        console.log(selectedNgGeoJsonLayer, hoveredNgGeoJsonLayer, geoJsonAllLayer);
-        return selectedId && [iconLayer, selectedNgGeoJsonLayer] || [hoveredNgGeoJsonLayer, geoJsonAllLayer];
+        return [iconLayer, selectedNgGeoJsonLayer, hoveredNgGeoJsonLayer, geoJsonAllLayer];
     }
 
-    hoverHandler(feature: IFeature) {
+    hoverHandler(feature: IHoveredInfo) {
         if (feature.object) {
             this.setState({
-                ...this.state,
-                hoveredNeighborhoodId: feature.object.properties.id
+                hoveredNeighborhoodId: feature.object.properties.id,
+                hoveredItemInfo: feature
             });
         } else {
             this.setState({
-                ...this.state,
-                hoveredNeighborhoodId: null
+                hoveredNeighborhoodId: null,
+                hoveredItemInfo: null
             });
         }
     };
 
-    clickHandler(feature: IFeature) {
+    clickHandler(feature: IHoveredInfo) {
         if (feature.object) {
             this.setNeighborhood(feature.object.properties.id);
+            this.setState({
+                hoveredItemInfo: null,
+                hoveredNeighborhoodId: null
+            })
         } else {
             this.setState({
-                ...this.state,
-                selectedNeighborhoodId: null
+                selectedNeighborhoodId: null,
             });
         }
+    };
+
+    renderTooltip() {
+        const { hoveredItemInfo } = this.state;
+
+        if (!hoveredItemInfo || !hoveredItemInfo.object || !this.props.locations) {
+            return null;
+        }
+
+        const neighborhoodName = hoveredItemInfo.object.properties.neighbourhood;
+        const neighborhoodId = hoveredItemInfo.object.properties.id;
+        const listingsCount = this.props.locations[neighborhoodId].length
+        return hoveredItemInfo && hoveredItemInfo.object && (
+            <div style={{ backgroundColor: 'black', color: 'white', padding: '3px', position: 'absolute', zIndex: 99999, pointerEvents: 'none', left: hoveredItemInfo.x, top: hoveredItemInfo.y }}>
+                <div>
+                    Neighborhood: {neighborhoodName}
+                </div>
+                <div>
+                    Listings: {listingsCount}
+                </div>
+            </div>
+        );
     };
 
     getIconColor(location: IListingLocation): number[] {
-        if (location.roomTypeId === 1) return [247, 19, 72];
-        if (location.roomTypeId === 2) return [127, 239, 217];
-        if (location.roomTypeId === 3) return [0, 107, 247];
+        if (location.rId === 1) return [247, 19, 72];
+        if (location.rId === 2) return [127, 239, 217];
+        if (location.rId === 3) return [0, 107, 247];
         return [255, 255, 255];
     };
 
     onViewStateChange({ viewState }: any) {
-        this.setState({ ...this.state, viewState });
+        this.setState({ viewState });
     }
 
     setNeighborhood(neighborhoodId: number) {
-        const ng = _.find(this.props.neighborhoods, (ng) => ng.id === neighborhoodId);
+        const ng = this.props.neighborhoods && this.props.neighborhoods[neighborhoodId];
+
+        if (!ng) {
+            return;
+        }
+
         const newViewState: IViewState = {
-            longitude: ng && ng.centerLongitude || initialViewState.longitude,
-            latitude: ng && ng.centerLatitude || initialViewState.latitude,
-            zoom: ng && ng.zoom || initialViewState.zoom,
+            longitude: ng.centerLongitude,
+            latitude: ng.centerLatitude,
+            zoom: ng.zoom,
             pitch: 0,
             bearing: 0,
-            transitionDuration: 3000,
+            transitionDuration: 1000,
             transitionInterpolator: new FlyToInterpolator()
         };
 
         this.props.fetchReports(neighborhoodId)
             .then(() => {
                 this.setState({
-                    ...this.state,
                     selectedNeighborhoodId: neighborhoodId,
                     viewState: newViewState
                 });
@@ -269,10 +293,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
     };
 
     render() {
-        // const layers = this.getLayers();
         const { reports, classes: { button }, neighborhoods, locations } = this.props;
-        const byRoomType = reports && reports.byRoomType || undefined;
-        const byPropertyType = reports && reports.byPropertyType || undefined;
 
         return (
             <React.Fragment>
@@ -281,11 +302,17 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     layers={this.getLayers()}
                     controller={true}
                     onViewStateChange={this.onViewStateChange}
-                >
-                    <StaticMap mapStyle='mapbox://styles/mapbox/dark-v9' width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
+                    useDevicePixels={false}>
+                    <StaticMap mapStyle="mapbox://styles/mapbox/dark-v9" width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
                 </DeckGL>}
+                {this.renderTooltip()}
                 {this.state.selectedNeighborhoodId && <div className="dashboard-pannel">
-                    <Close className={button} onClick={() => this.setState({ ...this.state, selectedNeighborhoodId: null, hoveredNeighborhoodId: null, viewState: initialViewState })} />
+                    <div>
+                        {this.props.neighborhoods && <p style={{ margin: "20px", textAlign: "center" }}>{this.props.neighborhoods[this.state.selectedNeighborhoodId].name}</p>}
+                        <Close className={button} onClick={() => this.setState({ selectedNeighborhoodId: null, hoveredNeighborhoodId: null, viewState: initialViewState })} />
+                        {this.props.locations && <div style={{ textAlign: "right", margin: "15px" }}>total: {this.props.locations[this.state.selectedNeighborhoodId].length}</div>}
+                    </div>
+                    {reports && <Charts data={reports} />}
                 </div>}
             </React.Fragment>
         );
@@ -303,7 +330,7 @@ const mapStateToProps = (state: IApplicationState) => {
 const mapDispatchToProps = (dispatch: any) => ({
     fetchLocations: (): Promise<IListingLocation[]> => dispatch(fetchLocations()),
     fetchNeighborhoods: (): Promise<INeighborhood[]> => dispatch(fetchNeighborhoods()),
-    fetchReports: (id: number | null): Promise<IReportsData> => dispatch(fetchReports(id)),
+    fetchReports: (id: number): Promise<IReportsData> => dispatch(fetchReports(id)),
 });
 
 export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps>(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DashBoardScene));
