@@ -6,6 +6,7 @@
     "@material-ui/core": "^3.6.1",
     "@material-ui/icons": "^3.0.1",
     "axios": "^0.18.0",
+    "classnames": "^2.2.6",
     "deck.gl": "^6.3.0",
     "lodash": "^4.17.11",
     "react": "^16.6.3",
@@ -15,6 +16,7 @@
     "react-router-dom": "^4.3.1",
     "react-scripts-ts": "^4.0.8",
     "recharts": "^1.4.1",
+    "react-virtualized": "^9.21.0",
     "redux-thunk": "^2.3.0"
   },
   "scripts": {
@@ -24,7 +26,8 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
-    "@types/geojson": "^7946.0.4",
+    "@types/react-virtualized": "^9.18.11",
+    "@types/classnames": "^2.2.6",
     "@types/jest": "^23.3.10",
     "@types/lodash": "^4.14.119",
     "@types/material-ui": "^0.21.5",
