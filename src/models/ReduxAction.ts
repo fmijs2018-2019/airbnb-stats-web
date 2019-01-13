@@ -1,5 +1,5 @@
 
 export interface IReduxAction {
-    payload: any;
+    payload?: any;
     type: string;
 }

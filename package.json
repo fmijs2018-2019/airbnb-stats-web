@@ -26,7 +26,6 @@
     "eject": "react-scripts-ts eject"
   },
   "devDependencies": {
-    "@types/react-virtualized": "^9.18.11",
     "@types/classnames": "^2.2.6",
     "@types/jest": "^23.3.10",
     "@types/lodash": "^4.14.119",
@@ -37,6 +36,7 @@
     "@types/react-map-gl": "^4.0.0",
     "@types/react-redux": "^6.0.10",
     "@types/react-router-dom": "^4.3.1",
+    "@types/react-virtualized": "^9.18.11",
     "@types/recharts": "^1.1.5",
     "redux-devtools-extension": "^2.13.7",
     "typescript": "^3.2.1"

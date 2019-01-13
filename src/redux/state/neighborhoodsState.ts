@@ -1,14 +1,16 @@
-import { INeighborhood, IReportsData } from 'src/models/neighborhoods/neighborhood';
+import { INeighborhood, IReportsData, INeighborhoodDetailed, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
 import { IError } from 'src/models/Error';
 
 export interface INeighborhoodsState {
-    list: _.Dictionary<INeighborhood> | null,
-    reports: IReportsData | null,
+    detailedList: _.Dictionary<INeighborhoodDetailed> | null,
+    ngReports: IReportsData | null,
+    allReports: _.Dictionary<INeighborhoodReport> | null,
     fetchError: IError | null,
 }
 
 export const initialNeighborhoodsState: INeighborhoodsState = {
-    list: null,
-    reports: null,
+    detailedList: null,
+    ngReports: null,
+    allReports: null,
     fetchError: null
 }

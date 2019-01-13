@@ -3,97 +3,49 @@ import * as React from 'react';
 import { StaticMap, ViewState, FlyToInterpolator, TransitionInterpolator } from 'react-map-gl';
 import { connect } from 'react-redux';
 import { IListingLocation } from 'src/models/listings/ListingLocation';
-import { INeighborhood, IReportsData } from 'src/models/neighborhoods/neighborhood';
+import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
 import { fetchLocations } from 'src/redux/actions/listingsActions';
-import { fetchNeighborhoods, fetchReports } from 'src/redux/actions/neighborhoodsActions';
+import { fetchNeighborhoodsDetailed, fetchNeighborhoodReports, fetchAllReports } from 'src/redux/actions/neighborhoodsActions';
 import { IApplicationState } from 'src/redux/store';
 import './DashboardScene.css';
 import mapMarker from './utils/map_marker.png';
 import * as _ from 'lodash';
-import Close from '@material-ui/icons/Close';
 import { WithStyles, withStyles, Theme, createStyles } from '@material-ui/core';
-import { PieChart, Pie, Cell, ResponsiveContainer } from 'recharts';
-import { Charts } from './charts';
+import NeighTooltip, { NeighTooltipProps } from './components/NeighTooltip';
+import { Close } from '@material-ui/icons';
+import { Charts } from './components/charts';
+import Pannel from './components/pannel';
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
 
-const colors = [
-    [65, 182, 196, 255],
-    [127, 205, 187, 255],
-    [199, 233, 180, 255],
-    [237, 248, 177, 255],
-    [255, 255, 204, 255],
-    [255, 237, 160, 255],
-    [254, 217, 118, 255],
-    [254, 178, 76, 255],
-    [253, 141, 60, 255],
-    [252, 78, 42, 255],
-    [227, 26, 28, 255],
-    [189, 0, 38, 255],
-    [128, 0, 38, 255],
-    [65, 18, 196, 255],
-    [66, 107, 244, 255],
-    [109, 240, 255, 255],
-    [102, 56, 201, 255],
-    [162, 229, 96, 255],
-    [219, 167, 160, 255],
-    [90, 232, 90, 255],
-    [211, 183, 80, 255],
-    [191, 80, 210, 255],
-    [1, 78, 42, 255],
-];
-
 interface IViewState extends ViewState {
-    transitionDuration?: number,
-    transitionInterpolator?: TransitionInterpolator
+    transitionDuration?: number;
+    transitionInterpolator?: TransitionInterpolator;
+    onTransitionStart?: () => void;
+    onTransitionEnd?: () => void;
 }
 
 interface DashBoardSceneStateProps {
     locations: _.Dictionary<IListingLocation[]> | null;
-    neighborhoods: _.Dictionary<INeighborhood> | null;
-    reports: IReportsData | null;
+    neighborhoods: _.Dictionary<INeighborhoodDetailed> | null;
+    allReports: _.Dictionary<INeighborhoodReport> | null;
 }
 
 interface DashBardSceneActionsProps {
-    fetchNeighborhoods: () => Promise<INeighborhood[]>;
+    fetchNeighborhoodsDetailed: () => Promise<INeighborhoodDetailed[]>;
     fetchLocations: () => Promise<IListingLocation[]>;
-    fetchReports: (id: number) => Promise<IReportsData>;
+    fetchAllReports: () => Promise<INeighborhoodReport[]>;
 }
-
-interface IHoveredInfo {
-    object: {
-        message: string,
-        properties: { id: number, neighbourhood: string }
-    },
-    x: string,
-    y: string,
-    coordinate: number[]
-};
 
 interface DashBoardSceneState {
     viewState: IViewState,
-    selectedNeighborhoodId: number | null,
-    hoveredNeighborhoodId: number | null,
-    hoveredItemInfo: IHoveredInfo | null
+    selectedNgId: number | null,
+    hoveredNgId: number | null,
+    tooltipInfo: NeighTooltipProps | null,
+    showAllGeoJsons: boolean
 }
-
-const styles = (theme: Theme) => createStyles({
-    button: {
-        top: 0,
-        right: 0,
-        margin: '5px',
-        border: `1px solid ${theme.palette.primary.main}`,
-        color: theme.palette.primary.main,
-        borderRadius: '50%',
-        position: 'absolute',
-        '&:hover': {
-            backgroundColor: '#f5f5f5',
-            cursor: 'pointer'
-        }
-    }
-});
-interface DashBoardSceneProps extends DashBoardSceneStateProps, DashBardSceneActionsProps, WithStyles<typeof styles> {
+interface DashBoardSceneProps extends DashBoardSceneStateProps, DashBardSceneActionsProps {
 }
 
 const initialViewState: IViewState = {
@@ -112,33 +64,33 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
 
         this.state = {
             viewState: initialViewState,
-            selectedNeighborhoodId: null,
-            hoveredNeighborhoodId: null,
-            hoveredItemInfo: null
+            selectedNgId: null,
+            hoveredNgId: null,
+            tooltipInfo: null,
+            showAllGeoJsons: true,
         }
 
         this.onViewStateChange = this.onViewStateChange.bind(this);
         this.setNeighborhood = this.setNeighborhood.bind(this);
         this.hoverHandler = this.hoverHandler.bind(this);
         this.clickHandler = this.clickHandler.bind(this);
-        this.getIconColor = this.getIconColor.bind(this);
-        this.renderTooltip = this.renderTooltip.bind(this);
+        this.closePannelHandler = this.closePannelHandler.bind(this);
     }
 
     componentDidMount() {
         !this.props.locations && this.props.fetchLocations();
-        !this.props.neighborhoods && this.props.fetchNeighborhoods();
+        !this.props.neighborhoods && this.props.fetchNeighborhoodsDetailed();
+        !this.props.allReports && this.props.fetchAllReports();
     }
 
     getLayers(): any[] {
-        const hoveredId = this.state.hoveredNeighborhoodId;
-        const selectedId = this.state.selectedNeighborhoodId;
+        const { hoveredNgId, selectedNgId } = this.state;
         const { locations, neighborhoods } = this.props;
 
-        const iconLayer = locations && selectedId && locations[selectedId] && new IconLayer({
-            id: 'icon-layer',
+        const iconLayer = locations && new IconLayer({
+            id: `icon-layer`,
             pickable: true,
-            data: locations[selectedId],
+            data: selectedNgId ? locations[selectedNgId] : [],
             iconAtlas: mapMarker,
             iconMapping: {
                 marker: {
@@ -153,113 +105,71 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             getPosition: (d: IListingLocation) => [d.lon, d.lat],
             getIcon: () => 'marker',
             getSize: () => 7,
-            getColor: this.getIconColor,
-            visible: selectedId,
+            getColor: [247, 19, 72, 200],
+            visible: selectedNgId,
         });
 
-        const geoJsonAllLayer = !selectedId && new GeoJsonLayer({
+        const geoJsonAllLayer = neighborhoods && new GeoJsonLayer({
             id: 'geojson-all-layer',
-            data: _.map(this.props.neighborhoods, 'geoJson'),
+            data: _.map(neighborhoods, 'geoJson'),
             pickable: true,
-            stroked: true,
             filled: true,
-            extruded: false,
-            getFillColor: (object: { properties: { id: number } }) => colors[object.properties.id],
-            opacity: 0.15,
-            lineJointRounded: true,
-            getLineColor: [196, 196, 196, 255],
-            getLineWidth: 25,
-            onHover: this.hoverHandler,
-            onClick: this.clickHandler,
-            visible: !selectedId
-        });
-
-        const selectedNgGeoJsonLayer = selectedId && neighborhoods && new GeoJsonLayer({
-            id: 'selected-neighborhood-layer',
-            data: neighborhoods[selectedId] && neighborhoods[selectedId].geoJson,
-            stroked: true,
-            filled: false,
             extruded: false,
             getFillColor: [0, 0, 0, 0],
             lineJointRounded: true,
             getLineColor: [255, 255, 255, 255],
-            getLineWidth: 10,
-            visible: selectedId
+            getLineWidth: 40,
+            onHover: this.hoverHandler,
+            onClick: this.clickHandler,
+            visible: this.state.showAllGeoJsons
         });
 
-        const hoveredNgGeoJsonLayer = hoveredId && !selectedId && neighborhoods && new GeoJsonLayer({
-            id: 'hovered-neighborhood-layer',
-            data: neighborhoods[hoveredId] && neighborhoods[hoveredId].geoJson,
+        const selectedNgLayer = neighborhoods && selectedNgId && new GeoJsonLayer({
+            id: `geoJson-selected-layer`,
+            data: neighborhoods[selectedNgId].geoJson,
             stroked: true,
-            filled: true,
+            filled: false,
             extruded: false,
-            lineWidthMinPixels: 2,
-            getFillColor: (object: { properties: { id: number } }) => colors[object.properties.id],
-            opacity: 2,
             lineJointRounded: true,
-            getLineColor: [255, 255, 255, 255],
-            getLineWidth: 25,
-            visible: !selectedId
+            getLineColor: [255, 255, 255, 150],
+            getLineWidth: 10,
+            visible: selectedNgId
         });
 
-        return [iconLayer, selectedNgGeoJsonLayer, hoveredNgGeoJsonLayer, geoJsonAllLayer];
+        const hoveredNgLayer = hoveredNgId && neighborhoods && new GeoJsonLayer({
+            id: `geoJson-hovered-layer`,
+            data: neighborhoods[hoveredNgId].geoJson,
+            filled: true,
+            getFillColor: [0, 0, 0, 0],
+            extruded: false,
+            getLineColor: [255, 0, 170],
+            getLineWidth: 30,
+        });
+
+        return [iconLayer, selectedNgLayer, geoJsonAllLayer, hoveredNgLayer];
     }
 
-    hoverHandler(feature: IHoveredInfo) {
+    hoverHandler(feature: any) {
+        const { locations } = this.props;
+
         if (feature.object) {
-            this.setState({
-                hoveredNeighborhoodId: feature.object.properties.id,
-                hoveredItemInfo: feature
-            });
+            const ngName = feature.object.properties.neighbourhood;
+            const ngId = feature.object.properties.id;
+            const listCount = locations ? locations[ngId].length : 0;
+            const { x, y } = feature;
+            const tooltipProps: NeighTooltipProps = { ngName, listCount, x, y };
+
+            this.setState({ hoveredNgId: feature.object.properties.id, tooltipInfo: tooltipProps });
         } else {
-            this.setState({
-                hoveredNeighborhoodId: null,
-                hoveredItemInfo: null
-            });
+            this.setState({ hoveredNgId: null, tooltipInfo: null });
         }
     };
 
-    clickHandler(feature: IHoveredInfo) {
+    clickHandler(feature: any) {
         if (feature.object) {
-            this.setNeighborhood(feature.object.properties.id);
-            this.setState({
-                hoveredItemInfo: null,
-                hoveredNeighborhoodId: null
-            })
-        } else {
-            this.setState({
-                selectedNeighborhoodId: null,
-            });
+            const ngId = feature.object.properties.id;
+            this.setNeighborhood(ngId);
         }
-    };
-
-    renderTooltip() {
-        const { hoveredItemInfo } = this.state;
-
-        if (!hoveredItemInfo || !hoveredItemInfo.object || !this.props.locations) {
-            return null;
-        }
-
-        const neighborhoodName = hoveredItemInfo.object.properties.neighbourhood;
-        const neighborhoodId = hoveredItemInfo.object.properties.id;
-        const listingsCount = this.props.locations[neighborhoodId].length
-        return hoveredItemInfo && hoveredItemInfo.object && (
-            <div style={{ backgroundColor: 'black', color: 'white', padding: '3px', position: 'absolute', zIndex: 99999, pointerEvents: 'none', left: hoveredItemInfo.x, top: hoveredItemInfo.y }}>
-                <div>
-                    Neighborhood: {neighborhoodName}
-                </div>
-                <div>
-                    Listings: {listingsCount}
-                </div>
-            </div>
-        );
-    };
-
-    getIconColor(location: IListingLocation): number[] {
-        if (location.rId === 1) return [247, 19, 72];
-        if (location.rId === 2) return [127, 239, 217];
-        if (location.rId === 3) return [0, 107, 247];
-        return [255, 255, 255];
     };
 
     onViewStateChange({ viewState }: any) {
@@ -267,7 +177,8 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
     }
 
     setNeighborhood(neighborhoodId: number) {
-        const ng = this.props.neighborhoods && this.props.neighborhoods[neighborhoodId];
+        const { neighborhoods } = this.props;
+        const ng = neighborhoods && neighborhoods[neighborhoodId];
 
         if (!ng) {
             return;
@@ -280,20 +191,29 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             pitch: 0,
             bearing: 0,
             transitionDuration: 1000,
-            transitionInterpolator: new FlyToInterpolator()
+            transitionInterpolator: new FlyToInterpolator(),
+            onTransitionStart: () => this.setState({ showAllGeoJsons: false }),
+            onTransitionEnd: () => this.setState({ selectedNgId: neighborhoodId }),
         };
 
-        this.props.fetchReports(neighborhoodId)
-            .then(() => {
-                this.setState({
-                    selectedNeighborhoodId: neighborhoodId,
-                    viewState: newViewState
-                });
-            });
+        this.setState({
+            viewState: newViewState,
+            tooltipInfo: null,
+            hoveredNgId: null,
+        });
+    };
+
+    closePannelHandler() {
+        this.setState({
+            selectedNgId: null,
+            hoveredNgId: null,
+            viewState: { ...initialViewState, onTransitionEnd: () => this.setState({ showAllGeoJsons: true }) }
+        });
     };
 
     render() {
-        const { reports, classes: { button }, neighborhoods, locations } = this.props;
+        const { tooltipInfo, selectedNgId } = this.state;
+        const { neighborhoods, allReports, locations } = this.props;
 
         return (
             <React.Fragment>
@@ -305,15 +225,8 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     useDevicePixels={false}>
                     <StaticMap mapStyle="mapbox://styles/mapbox/dark-v9" width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
                 </DeckGL>}
-                {this.renderTooltip()}
-                {this.state.selectedNeighborhoodId && <div className="dashboard-pannel">
-                    <div>
-                        {this.props.neighborhoods && <p style={{ margin: "20px", textAlign: "center" }}>{this.props.neighborhoods[this.state.selectedNeighborhoodId].name}</p>}
-                        <Close className={button} onClick={() => this.setState({ selectedNeighborhoodId: null, hoveredNeighborhoodId: null, viewState: initialViewState })} />
-                        {this.props.locations && <div style={{ textAlign: "right", margin: "15px" }}>total: {this.props.locations[this.state.selectedNeighborhoodId].length}</div>}
-                    </div>
-                    {reports && <Charts data={reports} />}
-                </div>}
+                {tooltipInfo && <NeighTooltip {...tooltipInfo} />}
+                {selectedNgId && allReports && locations && <Pannel clickHandler={this.closePannelHandler} data={allReports[selectedNgId]} total={locations[selectedNgId].length} />}
             </React.Fragment>
         );
     }
@@ -322,15 +235,15 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
 const mapStateToProps = (state: IApplicationState) => {
     return {
         locations: state.locations.list,
-        neighborhoods: state.neighborhoods.list,
-        reports: state.neighborhoods.reports,
+        neighborhoods: state.neighborhoods.detailedList,
+        allReports: state.neighborhoods.allReports,
     }
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
     fetchLocations: (): Promise<IListingLocation[]> => dispatch(fetchLocations()),
-    fetchNeighborhoods: (): Promise<INeighborhood[]> => dispatch(fetchNeighborhoods()),
-    fetchReports: (id: number): Promise<IReportsData> => dispatch(fetchReports(id)),
+    fetchNeighborhoodsDetailed: (): Promise<INeighborhoodDetailed[]> => dispatch(fetchNeighborhoodsDetailed()),
+    fetchAllReports: (): Promise<INeighborhoodReport[]> => dispatch(fetchAllReports()),
 });
 
-export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps>(mapStateToProps, mapDispatchToProps)(withStyles(styles)(DashBoardScene));
+export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps>(mapStateToProps, mapDispatchToProps)(DashBoardScene);

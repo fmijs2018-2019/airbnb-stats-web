@@ -2,7 +2,11 @@ import { createStyles, WithStyles, withStyles, Typography } from '@material-ui/c
 import * as React from 'react';
 import ListingsTable, { listings } from './components/ListingsTable'
 import { IListingTableDto } from 'src/models/listings/ListingTableDto';
-import FiltersPannel from './components/ListingsFilters';
+import ListingsFilters from './components/ListingsFilters';
+import { IFiltersData } from 'src/models/grid/filtersData';
+import { IApplicationState } from 'src/redux/store';
+import { fetchFiltersData } from 'src/redux/actions/listingsGridActions';
+import { connect } from 'react-redux';
 
 const styles = createStyles({
     listingsFilters: {
@@ -29,9 +33,24 @@ const styles = createStyles({
     }
 })
 
-class ListingsScene extends React.Component<WithStyles<typeof styles>> {
+interface IListingsSceneStateProps {
+    filtersData: IFiltersData | null
+}
+
+interface IListingsSceneActionProps {
+    fetchFiltersData: () => Promise<IFiltersData[]>
+}
+
+interface IListingsSceneProps extends IListingsSceneStateProps, IListingsSceneActionProps, WithStyles<typeof styles> {
+}
+
+class ListingsScene extends React.Component<IListingsSceneProps> {
+    componentDidMount() {
+        this.props.fetchFiltersData();
+    }
+
     render() {
-        const { classes } = this.props;
+        const { classes, filtersData } = this.props;
         const rows = listings.map(v => {
             const row: IListingTableDto = {
                 id: v.id,
@@ -52,7 +71,7 @@ class ListingsScene extends React.Component<WithStyles<typeof styles>> {
             <div className={classes.listingsFilters}>
                 <div className={classes.filtersContainer}>
                     <Typography style={{ marginTop: '20px', textAlign: 'center' }} variant="h6" >Filters</Typography>
-                    <FiltersPannel />
+                    {filtersData && <ListingsFilters filtersData={filtersData} />}
                 </div>
             </div>
             <div className={classes.listingsTable}>
@@ -60,6 +79,19 @@ class ListingsScene extends React.Component<WithStyles<typeof styles>> {
             </div>
         </React.Fragment>
     }
-}
+};
 
-export default withStyles(styles)(ListingsScene);
+const mapStateToProps = (state: IApplicationState) => {
+    return {
+        filtersData: state.listingsGrid.filtersData
+    }
+};
+
+const mapDispatchToProps = (dispatch: any) => ({
+    fetchFiltersData: (): Promise<IFiltersData[]> => dispatch(fetchFiltersData()),
+});
+
+const sceneWithStyles = withStyles(styles)(ListingsScene);
+
+export default connect<IListingsSceneStateProps, IListingsSceneActionProps>(mapStateToProps, mapDispatchToProps)(sceneWithStyles);
+

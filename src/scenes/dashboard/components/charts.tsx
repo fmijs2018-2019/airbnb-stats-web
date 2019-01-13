@@ -1,6 +1,6 @@
 import { ResponsiveContainer, Pie, PieChart, Tooltip, Legend, Cell } from "recharts";
 import * as React from 'react';
-import { IReportsData } from 'src/models/neighborhoods/neighborhood';
+import { IReportsData, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
 
 const colorsStrings = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
     '#E6B333', '#3366E6', '#999966', '#99FF99', '#B34D4D',
@@ -14,7 +14,7 @@ const colorsStrings = ['#FF6633', '#FFB399', '#FF33FF', '#FFFF99', '#00B3E6',
     '#E64D66', '#4DB380', '#FF4D4D', '#99E6E6', '#6666FF'];
 
 interface ChartsProps {
-    data: IReportsData
+    data: INeighborhoodReport
 }
 
 export class Charts extends React.Component<ChartsProps> {
@@ -27,7 +27,7 @@ export class Charts extends React.Component<ChartsProps> {
             <div style={{ width: "100%", height: "80%", position: "relative", overflowY: "scroll"}}>
                 <ResponsiveContainer width="100%" height={200}>
                     <PieChart>
-                        <Pie data={this.props.data.byRoomType} nameKey="type" dataKey="value" cx={150} cy={100} outerRadius={60} fill="#8884d8" label >
+                        <Pie data={this.props.data.byRoomType} nameKey="type" dataKey="count" cx={150} cy={100} outerRadius={60} fill="#8884d8" label >
                             {this.props.data.byRoomType.map((entry, index) => <Cell fill={colorsStrings[index % colorsStrings.length]} />)}
                         </Pie>
                         <Tooltip />
@@ -36,14 +36,14 @@ export class Charts extends React.Component<ChartsProps> {
                 </ResponsiveContainer>
                 <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
-                        <Pie data={this.props.data.byPropertyType} dataKey="value" cx={150} cy={150} innerRadius={50} outerRadius={90} fill="#82ca9d" label />
+                        <Pie data={this.props.data.byPropType} dataKey="count" cx={150} cy={150} innerRadius={50} outerRadius={90} fill="#82ca9d" label />
                         <Tooltip />
                         {/* <Legend verticalAlign="top" height={36} /> */}
                     </PieChart>
                 </ResponsiveContainer>
                 <ResponsiveContainer width="100%" height={300}>
                     <PieChart>
-                        <Pie data={this.props.data.byPropertyType} dataKey="value" cx={150} cy={150} innerRadius={50} outerRadius={90} fill="#99cadd" label />
+                        <Pie data={this.props.data.byPropType} dataKey="count" cx={150} cy={150} innerRadius={50} outerRadius={90} fill="#99cadd" label />
                         <Tooltip />
                         {/* <Legend verticalAlign="top" height={36} /> */}
                     </PieChart>

@@ -2,6 +2,8 @@ import { IIdentifiable } from '../Identifiable';
 
 export interface INeighborhood extends IIdentifiable {
     name: string,
+}
+export interface INeighborhoodDetailed extends INeighborhood {
     geoJson: object,
     centerLatitude: number,
     centerLongitude: number,
@@ -9,11 +11,17 @@ export interface INeighborhood extends IIdentifiable {
 }
 
 export interface IReportsData {
-    byRoomType: IDataUnit[],
-    byPropertyType: IDataUnit[],
+    byRoomType: ITypeReport[],
+    byPropertyType: ITypeReport[],
 }
 
-export interface IDataUnit {
+export interface ITypeReport extends IIdentifiable {
+    type: string,
+    count: number
+}
+
+export interface INeighborhoodReport extends IIdentifiable {
     name: string,
-    value: number
+    byRoomType: ITypeReport[],
+    byPropType: ITypeReport[]
 }

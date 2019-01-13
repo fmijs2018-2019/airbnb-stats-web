@@ -1,21 +1,21 @@
 import { Dispatch } from 'redux';
-import { getNeighborhoods, getReports } from 'src/api/neighborhoods';
+import { getNeighborhoodsDetailed, getReports, getAllReports } from 'src/api/neighborhoods';
 import { IError } from 'src/models/Error';
-import { INeighborhood, IReportsData } from 'src/models/neighborhoods/neighborhood';
+import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
 import { IReduxAction } from 'src/models/ReduxAction';
 import { IApplicationState } from '../store';
 import * as _ from 'lodash';
 
-export const FETCH_NEIGHBORHOODS_SUCCESS = 'FETCH_NEIGHBORHOODS_SUCCESS';
+export const FETCH_NEIGHBORHOODS_DETAILED_SUCCESS = 'FETCH_NEIGHBORHOODS_DETAILED_SUCCESS';
 export const FETCH_NEIGHBORHOODS_ERROR = 'FETCH_NEIGHBORHOODS_ERROR';
 
-export const fetchNeighborhoods = () => {
-    return function (dispatch: Dispatch): Promise<_.Dictionary<INeighborhood>> {
-        const promise = getNeighborhoods();
+export const fetchNeighborhoodsDetailed = () => {
+    return function (dispatch: Dispatch): Promise<INeighborhoodDetailed[]> {
+        const promise = getNeighborhoodsDetailed();
 
         promise
-            .then((data: _.Dictionary<INeighborhood>) => {
-                dispatch(fetchNeighborhoodsSuccess(data))
+            .then((data: INeighborhoodDetailed[]) => {
+                dispatch(fetchNeighborhoodsDetailedSuccess(_.keyBy(data, 'id')))
             })
             .catch((error: IError) => {
                 dispatch(fetchNeighborhoodsError(error))
@@ -25,41 +25,70 @@ export const fetchNeighborhoods = () => {
     }
 }
 
-export const fetchNeighborhoodsSuccess = (neighborhoods: _.Dictionary<INeighborhood>): IReduxAction => ({
-    type: FETCH_NEIGHBORHOODS_SUCCESS,
+export const fetchNeighborhoodsDetailedSuccess = (neighborhoods: _.Dictionary<INeighborhoodDetailed>): IReduxAction => ({
+    type: FETCH_NEIGHBORHOODS_DETAILED_SUCCESS,
     payload: neighborhoods
-})
+});
 
 export const fetchNeighborhoodsError = (error: IError): IReduxAction => ({
     type: FETCH_NEIGHBORHOODS_ERROR,
     payload: error
-})
+});
 
-export const FETCH_REPORTS_SUCCESS = 'FETCH_REPORTS_SUCCESS';
-export const FETCH_REPORTS_ERROR = 'FETCH_REPORTS_ERROR';
+export const FETCH_NG_REPORTS_SUCCESS = 'FETCH_NG_REPORTS_SUCCESS';
+export const FETCH_NG_REPORTS_ERROR = 'FETCH_NG_REPORTS_ERROR';
 
-export const fetchReports = (neighborhoodId: number) => {
+export const fetchNeighborhoodReports = (neighborhoodId: number) => {
     return function (dispatch: Dispatch): Promise<IReportsData> {
         const promise = getReports(neighborhoodId);
 
         promise
             .then((data) => {
-                dispatch(fetchReportsSuccess(data));
+                dispatch(fetchNgReportsSuccess(data));
             })
             .catch((error: IError) => {
-                dispatch(fetchReportsError(error));
+                dispatch(fetchNgReportsError(error));
             });
 
         return promise;
     }
 };
 
-export const fetchReportsSuccess = (reports: IReportsData) => ({
-    type: FETCH_REPORTS_SUCCESS,
+export const fetchNgReportsSuccess = (reports: IReportsData) => ({
+    type: FETCH_NG_REPORTS_SUCCESS,
     payload: reports
 });
 
-export const fetchReportsError = (error: IError) => ({
-    type: FETCH_REPORTS_ERROR,
+export const fetchNgReportsError = (error: IError) => ({
+    type: FETCH_NG_REPORTS_ERROR,
+    payload: error
+});
+
+export const FETCH_ALL_REPORTS_SUCCESS = 'FETCH_ALL_REPORTS_SUCCESS';
+export const FETCH_ALL_REPORTS_ERROR = 'FETCH_ALL_REPORTS_ERROR';
+
+export const fetchAllReports = () => {
+    return function (dispatch: Dispatch): Promise<INeighborhoodReport[]> {
+        const promise = getAllReports();
+
+        promise
+            .then((data) => {
+                dispatch(fetchAllReportsSuccess(_.keyBy(data, 'id')));
+            })
+            .catch((error: IError) => {
+                dispatch(fetchAllReportsError(error));
+            });
+
+        return promise;
+    }
+};
+
+export const fetchAllReportsSuccess = (reports: _.Dictionary<INeighborhoodReport>) => ({
+    type: FETCH_ALL_REPORTS_SUCCESS,
+    payload: reports
+});
+
+export const fetchAllReportsError = (error: IError) => ({
+    type: FETCH_ALL_REPORTS_ERROR,
     payload: error
 });
