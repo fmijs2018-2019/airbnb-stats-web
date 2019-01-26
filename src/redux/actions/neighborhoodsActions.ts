@@ -1,5 +1,5 @@
 import { Dispatch } from 'redux';
-import { getNeighborhoodsDetailed, getReports, getAllReports } from 'src/api/neighborhoods';
+import neighborhoodsApiClient from '../../api/neighborhoodsApi';
 import { IError } from 'src/models/Error';
 import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
 import { IReduxAction } from 'src/models/ReduxAction';
@@ -11,7 +11,7 @@ export const FETCH_NEIGHBORHOODS_ERROR = 'FETCH_NEIGHBORHOODS_ERROR';
 
 export const fetchNeighborhoodsDetailed = () => {
     return function (dispatch: Dispatch): Promise<INeighborhoodDetailed[]> {
-        const promise = getNeighborhoodsDetailed();
+        const promise = neighborhoodsApiClient.getNeighborhoodsDetailed();
 
         promise
             .then((data: INeighborhoodDetailed[]) => {
@@ -40,7 +40,7 @@ export const FETCH_NG_REPORTS_ERROR = 'FETCH_NG_REPORTS_ERROR';
 
 export const fetchNeighborhoodReports = (neighborhoodId: number) => {
     return function (dispatch: Dispatch): Promise<IReportsData> {
-        const promise = getReports(neighborhoodId);
+        const promise = neighborhoodsApiClient.getReports(neighborhoodId);
 
         promise
             .then((data) => {
@@ -69,7 +69,7 @@ export const FETCH_ALL_REPORTS_ERROR = 'FETCH_ALL_REPORTS_ERROR';
 
 export const fetchAllReports = () => {
     return function (dispatch: Dispatch): Promise<INeighborhoodReport[]> {
-        const promise = getAllReports();
+        const promise = neighborhoodsApiClient.getAllReports();
 
         promise
             .then((data) => {

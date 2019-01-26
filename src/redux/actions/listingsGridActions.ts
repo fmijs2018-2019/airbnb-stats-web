@@ -1,6 +1,6 @@
 import { IFiltersData } from 'src/models/grid/filtersData';
 import { Dispatch } from 'redux';
-import { getFiltersData } from 'src/api/listings';
+import listingsApiClient from '../../api/listingsApi';
 import { IReduxAction } from 'src/models/ReduxAction';
 import { IError } from 'src/models/Error';
 import { CONNREFUSED } from 'dns';
@@ -10,7 +10,7 @@ export const FETCH_FILTERS_DATA_ERROR = 'FETCH_FILTERS_DATA_ERROR';
 
 export const fetchFiltersData = () => {
     return function (dispatch: Dispatch): Promise<IFiltersData> {
-        const promise = getFiltersData();
+        const promise = listingsApiClient.getFiltersData();
 
         promise
             .then((data: IFiltersData) => {

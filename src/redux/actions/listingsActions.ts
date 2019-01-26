@@ -1,9 +1,9 @@
 import { Dispatch } from 'redux';
-import { getLocations } from 'src/api/listings';
 import { IError } from 'src/models/Error';
 import { IListingLocation } from 'src/models/listings/ListingLocation';
 import { IReduxAction } from '../../models/ReduxAction';
 import { isFetching } from './commonActions';
+import listingsApiClient from '../../api/listingsApi';
 import * as _ from 'lodash';
 
 export const FETCH_LOCATIONS_SUCCESS = 'FETCH_LOCATIONS_SUCCESS';
@@ -13,7 +13,7 @@ export const fetchLocations = () => {
     return function (dispatch: Dispatch): Promise<IListingLocation[]> {
         dispatch(isFetching(true));
 
-        const promise = getLocations();
+        const promise = listingsApiClient.getLocations();
 
         promise
             .then((data: IListingLocation[]) => {

@@ -3,6 +3,7 @@ import { AppBar, Tabs, Tab, LinearProgress, Theme, createStyles, WithStyles, wit
 import { Link, withRouter, RouteComponentProps } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { IApplicationState } from 'src/redux/store';
+import auth0Client from 'src/Auth';
 
 const styles = (theme: Theme) => createStyles({
     navbar: {
@@ -24,10 +25,20 @@ const styles = (theme: Theme) => createStyles({
 })
 
 interface INavBarProps extends RouteComponentProps, WithStyles<typeof styles> {
-    isFetching: boolean
+    isFetching: boolean,
 };
 
 class NavBar extends React.Component<INavBarProps> {
+    constructor(props: Readonly<INavBarProps>) {
+        super(props);
+        this.signOut = this.signOut.bind(this);
+    }
+
+    signOut(): void {
+        auth0Client.signOut();
+        this.props.history.replace('/');
+    };
+
     getValue(): number {
         const path = this.props.history.location.pathname;
 
@@ -59,6 +70,17 @@ class NavBar extends React.Component<INavBarProps> {
                     <Tab classes={{ root: classes.tab }} value={1} component={(props: any) => <Link to="/listings" {...props}>Listings</Link>}></Tab>
                     <Tab classes={{ root: classes.tab }} value={2} component={(props: any) => <Link to="/reports" {...props}>Reports</Link>}></Tab>
                     <Tab classes={{ root: classes.tab }} value={3} component={(props: any) => <Link to="/about" {...props}>About</Link>}></Tab>
+                    {
+                        !auth0Client.isAuthenticated() &&
+                        <button onClick={auth0Client.signIn}>Sign In</button>
+                    }
+                    {
+                        auth0Client.isAuthenticated() &&
+                        <div>
+                            <label>{auth0Client.getProfile().name}</label>
+                            <button onClick={() => { this.signOut() }}>Sign Out</button>
+                        </div>
+                    }
                 </Tabs>
             </AppBar>
             {isFetching && <LinearProgress classes={{ root: classes.progress }} />}

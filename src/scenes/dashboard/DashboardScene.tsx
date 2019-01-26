@@ -10,10 +10,7 @@ import { IApplicationState } from 'src/redux/store';
 import './DashboardScene.css';
 import mapMarker from './utils/map_marker.png';
 import * as _ from 'lodash';
-import { WithStyles, withStyles, Theme, createStyles } from '@material-ui/core';
 import NeighTooltip, { NeighTooltipProps } from './components/NeighTooltip';
-import { Close } from '@material-ui/icons';
-import { Charts } from './components/charts';
 import Pannel from './components/pannel';
 
 // Set your mapbox access token here
