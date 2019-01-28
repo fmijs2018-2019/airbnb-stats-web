@@ -61,20 +61,13 @@ interface IVirtualizedTableProps extends WithStyles<typeof styles> {
     rowGetter: (index: Index) => any;
     sortable?: boolean;
     onSort?: (sortBy: string, sort: 'asc' | 'desc') => void;
-}
-
-interface IVirtualizedTableState {
-    orderBy: string;
+    orderBy?: string;
     order: 'asc' | 'desc';
 }
 
-class VirtualizedTable extends React.Component<IVirtualizedTableProps, IVirtualizedTableState> {
+class VirtualizedTable extends React.Component<IVirtualizedTableProps> {
     constructor(props: any) {
         super(props);
-        this.state = {
-            orderBy: '',
-            order: 'asc',
-        }
     }
 
     getRowClassName = ({ index }: Index) => {
@@ -102,21 +95,15 @@ class VirtualizedTable extends React.Component<IVirtualizedTableProps, IVirtuali
     createSortHandler = (property: string) => (event: any) => {
         let order: any = 'desc';
 
-        if (this.state.orderBy === property && this.state.order === 'desc') {
+        if (this.props.orderBy === property && this.props.order === 'desc') {
             order = 'asc';
         }
 
-        this.setState({
-            orderBy: property,
-            order: order
-        });
-
-        this.props.onSort && this.props.onSort(this.state.orderBy, this.state.order);
+        this.props.onSort && this.props.onSort(property, order);
     }
 
     headerRenderer: HeaderRenderer = ({ label, dataKey }, column) => {
-        const { headerHeight, classes, sortable } = this.props;
-        const { orderBy, order } = this.state;
+        const { orderBy, order, headerHeight, classes, sortable } = this.props;
 
         const active = orderBy === dataKey;
         const header = !column.disableSort && sortable

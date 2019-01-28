@@ -1,25 +1,33 @@
-import { IFiltersData } from 'src/models/grid/filtersData';
+import { IFilters } from 'src/models/grid/filtersData';
 import { IError } from 'src/models/Error';
 import { IListingTableDto } from 'src/models/listings/ListingTableDto';
+import { IListing } from 'src/models/listings/Listing';
 
-export interface IListingsGridState {
-    filtersData: IFiltersData | null,
+export interface IListingsGridState extends IFilters {
     fetchFiltersDataError: IError | null,
-    listings: IListingTableDto[] | null,
-    take: number,
-    skip: number,
-    orderBy?: string,
+    fetchListingsError: IError | null,
+    listings: IListing[] | null,
+    pageSize: number,
+    currentPage: number,
+    orderBy: string,
+    order: 'asc' | 'desc',
     fromDate?: Date,
     toDate?: Date,
-    neighs?: number[],
-    propTypes?: number[],
-    roomTypes?: number[],
+    totalCount: number,
+    numberOfPages: number,
 }
 
 export const initialListingsGridState: IListingsGridState = {
-    filtersData: null,
+    roomTypeFilter: {},
+    propertyTypeFilter: {},
+    neighborhoodFilter: {},
     fetchFiltersDataError: null,
+    fetchListingsError: null,
     listings: null,
-    take: 5,
-    skip: 0
+    pageSize: 5,
+    currentPage: 0,
+    totalCount: 0,
+    numberOfPages: 0,
+    orderBy: '',
+    order: 'asc'
 }

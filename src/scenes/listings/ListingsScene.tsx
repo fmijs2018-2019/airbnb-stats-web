@@ -1,12 +1,13 @@
 import { createStyles, WithStyles, withStyles, Typography } from '@material-ui/core';
 import * as React from 'react';
-import ListingsTable, { listings } from './components/ListingsTable'
+import ListingsTable from './components/ListingsTable'
 import { IListingTableDto } from 'src/models/listings/ListingTableDto';
 import ListingsFilters from './components/ListingsFilters';
-import { IFiltersData } from 'src/models/grid/filtersData';
+import { IFilters } from 'src/models/grid/filtersData';
 import { IApplicationState } from 'src/redux/store';
-import { fetchFiltersData } from 'src/redux/actions/listingsGridActions';
+import { fetchFiltersData, setNeighborhoodsFilter, setPropertyTypesFilter, setRoomTypesFilter, fetchTableData, setPage, setPageSize, setOrder, setOrderBy, clearFilters } from 'src/redux/actions/listingsGridActions';
 import { connect } from 'react-redux';
+import { IListing } from 'src/models/listings/Listing';
 
 const styles = createStyles({
     listingsFilters: {
@@ -33,12 +34,27 @@ const styles = createStyles({
     }
 })
 
-interface IListingsSceneStateProps {
-    filtersData: IFiltersData | null
+interface IListingsSceneStateProps extends IFilters {
+    listings: IListing[] | null;
+    currentPage: number;
+    totalCount: number;
+    pageSize: number;
+    numberOfPages: number;
+    order: 'asc' | 'desc';
+    orderBy: string;
 }
 
 interface IListingsSceneActionProps {
-    fetchFiltersData: () => Promise<IFiltersData[]>
+    fetchFiltersData: () => Promise<IFilters[]>
+    setNeighborhoodFilter: (id: string, checked: boolean) => void;
+    setPropertyTypeFilter: (id: string, checked: boolean) => void;
+    setRoomTypeFilter: (id: string, checked: boolean) => void;
+    setPage: (page: number) => void;
+    setPageSize: (size: number) => void;
+    setOrder: (order: 'asc' | 'desc') => void;
+    setOrderBy: (orderBy: string) => void;
+    clearFilters: () => void;
+    fetchTableData: () => Promise<{ total_count: number, listings: IListing[] }>;
 }
 
 interface IListingsSceneProps extends IListingsSceneStateProps, IListingsSceneActionProps, WithStyles<typeof styles> {
@@ -47,11 +63,13 @@ interface IListingsSceneProps extends IListingsSceneStateProps, IListingsSceneAc
 class ListingsScene extends React.Component<IListingsSceneProps> {
     componentDidMount() {
         this.props.fetchFiltersData();
+        this.props.fetchTableData();
     }
 
     render() {
-        const { classes, filtersData } = this.props;
-        const rows = listings.map(v => {
+        const { classes, roomTypeFilter, propertyTypeFilter, neighborhoodFilter, listings, pageSize, numberOfPages, totalCount, currentPage } = this.props;
+        const filters: IFilters = { roomTypeFilter, propertyTypeFilter, neighborhoodFilter }
+        const rows = (listings || []).map(v => {
             const row: IListingTableDto = {
                 id: v.id,
                 name: v.name,
@@ -59,8 +77,8 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
                 neighborhoodOverview: v.neighborhood_overview,
                 price: v.price,
                 type: {
-                    propertyType: v.property_type,
-                    roomType: v.room_type,
+                    propertyType: v.propertytype,
+                    roomType: v.roomtype,
                 },
                 accommodates: v.accommodates,
                 rating: v.rating,
@@ -71,24 +89,86 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
             <div className={classes.listingsFilters}>
                 <div className={classes.filtersContainer}>
                     <Typography style={{ marginTop: '20px', textAlign: 'center' }} variant="h6" >Filters</Typography>
-                    {filtersData && <ListingsFilters filtersData={filtersData} />}
+                    {filters && <ListingsFilters
+                        filters={filters}
+                        onPTChange={this.props.setPropertyTypeFilter}
+                        onRTChange={this.props.setRoomTypeFilter}
+                        onNgChange={this.props.setNeighborhoodFilter}
+                        onApply={this.applyFilters}
+                        onClear={this.clearFilters} />}
                 </div>
             </div>
             <div className={classes.listingsTable}>
-                <ListingsTable listings={rows} />
+                <ListingsTable
+                    totalCount={totalCount}
+                    numberOfPages={numberOfPages}
+                    currentPage={currentPage}
+                    pageSize={pageSize} listings={rows}
+                    onPageChange={this.onPageChange}
+                    onPageSizeChange={this.onPageSizeChange}
+                    onSort={this.sortHandler}
+                    order={this.props.order}
+                    orderBy={this.props.orderBy} />
             </div>
         </React.Fragment>
+    }
+
+    onPageChange = (page: number) => {
+        if (page < 0) {
+            page = 0;
+        }
+        this.props.setPage(page);
+        this.props.fetchTableData();
+    }
+
+    onPageSizeChange = (size: number) => {
+        this.props.setPageSize(size);
+        this.props.setPage(0);
+        this.props.fetchTableData();
+    }
+
+    applyFilters = () => {
+        this.props.fetchTableData();
+    }
+
+    clearFilters = () => {
+        this.props.clearFilters();
+        this.props.fetchTableData();
+    }
+
+    sortHandler = (orderBy: string, order: 'asc' | 'desc') => {
+        this.props.setOrder(order);
+        this.props.setOrderBy(orderBy);
+        this.props.fetchTableData();
     }
 };
 
 const mapStateToProps = (state: IApplicationState) => {
     return {
-        filtersData: state.listingsGrid.filtersData
+        roomTypeFilter: state.listingsGrid.roomTypeFilter,
+        propertyTypeFilter: state.listingsGrid.propertyTypeFilter,
+        neighborhoodFilter: state.listingsGrid.neighborhoodFilter,
+        listings: state.listingsGrid.listings,
+        numberOfPages: state.listingsGrid.numberOfPages,
+        totalCount: state.listingsGrid.totalCount,
+        currentPage: state.listingsGrid.currentPage,
+        pageSize: state.listingsGrid.pageSize,
+        order: state.listingsGrid.order,
+        orderBy: state.listingsGrid.orderBy
     }
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
-    fetchFiltersData: (): Promise<IFiltersData[]> => dispatch(fetchFiltersData()),
+    fetchFiltersData: (): Promise<IFilters[]> => dispatch(fetchFiltersData()),
+    setNeighborhoodFilter: (id: string, checked: boolean) => dispatch(setNeighborhoodsFilter(id, checked)),
+    setPropertyTypeFilter: (id: string, checked: boolean) => dispatch(setPropertyTypesFilter(id, checked)),
+    setRoomTypeFilter: (id: string, checked: boolean) => dispatch(setRoomTypesFilter(id, checked)),
+    setPage: (page: number) => dispatch(setPage(page)),
+    setPageSize: (size: number) => dispatch(setPageSize(size)),
+    setOrder: (order: 'asc' | 'desc') => dispatch(setOrder(order)),
+    setOrderBy: (orderBy: string) => dispatch(setOrderBy(orderBy)),
+    clearFilters: () => dispatch(clearFilters()),
+    fetchTableData: (): Promise<{ total_count: number, listings: IListing[] }> => dispatch(fetchTableData())
 });
 
 const sceneWithStyles = withStyles(styles)(ListingsScene);

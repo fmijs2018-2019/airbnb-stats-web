@@ -2,32 +2,12 @@ import { createStyles, Theme, WithStyles, withStyles, Typography } from '@materi
 import * as React from 'react';
 import { Index } from 'react-virtualized';
 import VirtualizedTable, { IVirtualizedColumn } from 'src/components/VirtualizedTable';
-import { IListing } from 'src/models/listings/Listing';
 import { IListingTableDto } from 'src/models/listings/ListingTableDto';
 import ListingAccommodatesColumn from './ListingAccommodatesColumn';
 import ListingNeighborhoodColumn from './ListingNeighborhoodColumn';
 import ListingRatingColumn from './ListingRatingColumn';
 import ListingTypeColumn from './ListingTypeColumn';
 import TablePaging from 'src/components/TablePaging';
-
-
-export const listings: IListing[] = [
-    { "id": 7753468, "name": "Cozy top floor canal apartment", "street": "Amsterdam, Noord-Holland, Netherlands", "neighborhood_overview": null, "price": 175, "neighborhood": "Centrum-Oost", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 4, "rating": 100 },
-    { "id": 97221, "name": "Beautiful and spacious room", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": null, "price": 65, "neighborhood": "Slotervaart", "property_type": "Bed and breakfast", "room_type": "Private room", "accommodates": 2, "rating": 88 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Shared room", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 },
-    { "id": 97476, "name": "Sunny, spacious apartment near Vondelpark", "street": "Amsterdam, North Holland, Netherlands", "neighborhood_overview": "My street is one where a lot of families live and there are a lot of shops and restaurants nearby. I live very close to Vondelpark, cities most famous park.", "price": 115, "neighborhood": "Zuid", "property_type": "Apartment", "room_type": "Entire home/apt", "accommodates": 2, "rating": 97 }
-]
 
 const styles = (theme: Theme) => createStyles({
     paging: {
@@ -37,26 +17,24 @@ const styles = (theme: Theme) => createStyles({
 
 interface IListingsTableProps extends WithStyles<typeof styles> {
     listings: IListingTableDto[];
+    currentPage: number;
+    totalCount: number;
+    pageSize: number;
+    numberOfPages: number;
+    orderBy: string;
+    order: 'asc' | 'desc';
+    onSort: (orderBy: string, order: 'asc' | 'desc') => void;
+    onPageSizeChange: (pageSize: number) => void;
+    onPageChange: (newPage: number) => void;
 }
 
-class ListingsTable extends React.Component<IListingsTableProps, any> {
-    state = {
-        page: 0,
-        rowsPerPage: 5,
-        pagesCount: 27,
-    }
-
+class ListingsTable extends React.Component<IListingsTableProps> {
     onPageSizeChange = (pageSize: number) => {
-        this.setState({
-            page: 0,
-            rowsPerPage: pageSize,
-        })
+        this.props.onPageSizeChange(pageSize);
     }
 
     onPageChange = (page: number) => {
-        this.setState({
-            page
-        });
+        this.props.onPageChange(page);
     }
 
     getColumns = (): IVirtualizedColumn[] => {
@@ -81,18 +59,18 @@ class ListingsTable extends React.Component<IListingsTableProps, any> {
                 renderCell: ({ cellData }: any) => cellData && <div>${cellData.toFixed(2)}</div>,
             },
             {
-                width: 200,
+                width: 300,
                 label: 'Neighborhood',
                 dataKey: 'neighborhood',
                 renderCell: ({ cellData }: any) => cellData && <ListingNeighborhoodColumn neighborhood={cellData} />,
                 disableSort: true,
             },
-            {
-                width: 400,
-                label: 'Neighborhood Overview',
-                dataKey: 'neighborhoodOverview',
-                disableSort: true,
-            },
+            // {
+            //     width: 400,
+            //     label: 'Neighborhood Overview',
+            //     dataKey: 'neighborhoodOverview',
+            //     disableSort: true,
+            // },
             {
                 width: 140,
                 label: 'Accommodates',
@@ -110,17 +88,17 @@ class ListingsTable extends React.Component<IListingsTableProps, any> {
     }
 
     render() {
-        const { listings, classes } = this.props;
+        const { listings, classes, order, orderBy } = this.props;
         const columns = this.getColumns();
 
         return (
             <React.Fragment>
                  <div style={{ width: '100%', padding: '20px 0 20px 20px', boxSizing: 'border-box' }}>
                     <Typography variant="h5">Listings</Typography>
-                    <p style={{margin: 'initial', color: 'gray', fontSize: '14px'}}>{this.state.pagesCount} listings found</p>
+                    <p style={{margin: 'initial', color: 'gray', fontSize: '14px'}}>{this.props.totalCount} listings found</p>
                 </div>
                 <div style={{ flex: 1, overflowX: 'auto', width: '100%', borderTop: '1px solid rgba(224, 224, 224, 1)' }}>
-                    <div style={{ height: '100%', width: '1450px' }}>
+                    <div style={{ height: '100%', width: '1150px' }}>
                         <VirtualizedTable
                             sortable
                             rowHeight={70}
@@ -129,13 +107,16 @@ class ListingsTable extends React.Component<IListingsTableProps, any> {
                             rowGetter={({ index }: Index) => listings[index]}
                             onRowClick={(event: any) => console.log(event)}
                             columns={columns}
+                            order={order}
+                            orderBy={orderBy}
+                            onSort={this.props.onSort}
                         />
                     </div>
                 </div>
                 <div style={{ width: '100%' }}>
-                    <TablePaging className={classes.paging} page={this.state.page}
-                        pagesCount={this.state.pagesCount}
-                        rowsPerPage={this.state.rowsPerPage}
+                    <TablePaging className={classes.paging} page={this.props.currentPage}
+                        pagesCount={this.props.numberOfPages}
+                        rowsPerPage={this.props.pageSize}
                         onPageChange={this.onPageChange}
                         onPageSizeChange={this.onPageSizeChange} />
                 </div>

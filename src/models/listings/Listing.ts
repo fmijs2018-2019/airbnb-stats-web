@@ -6,8 +6,8 @@ export interface IListing extends IIdentifiable {
     neighborhood_overview: string | null;
     price: number;
     neighborhood: string;
-    property_type: string;
-    room_type: string;
+    propertytype: string;
+    roomtype: string;
     accommodates: number;
     rating: number | null;
 };
