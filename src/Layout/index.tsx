@@ -1,9 +1,9 @@
 import * as React from 'react';
-import NavBar from './components/NavBar';
+import NavigationBar from './components/NavigationBar';
 
 export const Layout: React.SFC<{}> = (props) => {
     return <React.Fragment>
-        <NavBar />
+        <NavigationBar />
         <main>
             {props.children}
         </main>

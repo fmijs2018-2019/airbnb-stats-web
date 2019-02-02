@@ -27,7 +27,27 @@ export interface NeighTooltipProps {
 
 const NeighTooltip: React.SFC<NeighTooltipProps & WithStyles<typeof styles>> = (props) => {
     const { ngName, listCount, x, y, classes: { tooltip, icon } } = props;
-    return <div className={tooltip} style={{ left: x, top: y }}>
+
+    let pos = {};
+    let xPos = 'left';
+    let xVal = x;
+    let yPos = 'top';
+    let yVal = y;
+    const { innerWidth: width, innerHeight: height } = window;
+    
+    if (width - x < 200) {
+        xPos = 'right';
+        xVal = width - x;
+    } 
+    if (height - y < 60) {
+        yPos = 'bottom';
+        yVal = height - y;
+    }
+
+    pos[xPos] = xVal;
+    pos[yPos] = yVal;
+
+    return <div className={tooltip} style={pos}>
         <div style={{ display: 'flex', alignItems: 'center', marginRight: '10px' }}>
             <div><PlaceRounded fontSize="large" classes={{ root: icon }} /></div>
             <div>

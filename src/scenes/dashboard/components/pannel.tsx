@@ -15,9 +15,9 @@ const styles = (theme: Theme) => createStyles({
         top: 0,
         right: 0,
         margin: '5px',
-        border: `1px solid ${theme.palette.primary.main}`,
+        //border: `1px solid ${theme.palette.primary.main}`,
         color: theme.palette.primary.main,
-        borderRadius: '50%',
+        //borderRadius: '50%',
         position: 'absolute',
         '&:hover': {
             backgroundColor: '#f5f5f5',

@@ -3,11 +3,10 @@ import { Route, Switch, Redirect, RouteComponentProps, withRouter } from 'react-
 import DashBoardScene from './scenes/dashboard/DashboardScene';
 import ListingsScene from './scenes/listings/ListingsScene';
 import ReportsScene from './scenes/reports/ReportsScene';
-import AboutScene from './scenes/about/AboutScene';
-import { Layout } from './Layout';
 import SecuredRoute from './components/SecuredRoute';
 import Callback from './components/Callback';
 import auth0Client from './Auth';
+import { Layout } from './Layout';
 
 interface IAppProps extends RouteComponentProps {
 
