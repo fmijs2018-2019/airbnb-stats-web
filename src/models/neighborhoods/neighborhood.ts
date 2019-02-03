@@ -20,8 +20,14 @@ export interface ITypeReport extends IIdentifiable {
     count: number
 }
 
+export interface IRatingReport {
+    rating?: number;
+    count: number;
+}
+
 export interface INeighborhoodReport extends IIdentifiable {
     name: string,
     byRoomType: ITypeReport[],
-    byPropType: ITypeReport[]
+    byPropType: ITypeReport[],
+    byRating: IRatingReport[],
 }

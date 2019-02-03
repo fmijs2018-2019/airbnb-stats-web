@@ -3,7 +3,7 @@ import * as React from 'react';
 import { StaticMap, ViewState, FlyToInterpolator, TransitionInterpolator } from 'react-map-gl';
 import { connect } from 'react-redux';
 import { IListingLocation } from 'src/models/listings/ListingLocation';
-import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
+import { INeighborhoodDetailed, IReportsData, INeighborhoodReport, ITypeReport, INeighborhood } from 'src/models/neighborhoods/neighborhood';
 import { fetchLocations } from 'src/redux/actions/listingsActions';
 import { fetchNeighborhoodsDetailed, fetchNeighborhoodReports, fetchAllReports } from 'src/redux/actions/neighborhoodsActions';
 import { IApplicationState } from 'src/redux/store';
@@ -11,7 +11,9 @@ import './DashboardScene.css';
 import mapMarker from './utils/map_marker.png';
 import * as _ from 'lodash';
 import NeighTooltip, { NeighTooltipProps } from './components/NeighTooltip';
-import Pannel from './components/pannel';
+import Pannel from 'src/components/Panel';
+import { deepClone } from 'src/redux/reducers/listingsGridReducer';
+import NgReportsPanel from './components/NgReportsPanel';
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
@@ -208,9 +210,29 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
         });
     };
 
+    getSelectedNeighborhood = () => {
+        const { neighborhoods } = this.props;
+        const { selectedNgId } = this.state;
+        return (selectedNgId && neighborhoods) ? neighborhoods[selectedNgId] : null;
+    }
+
+    getNgReports = (neigh: INeighborhood | null) => {
+        const { allReports } = this.props;
+        return (neigh && allReports) ? allReports[neigh.id] : null;
+    }
+
+    getNgListingsCount = (neigh: INeighborhood | null) => {
+        const { locations } = this.props;
+        return (neigh && locations) ? locations[neigh.id].length : 0;
+    }
+
     render() {
         const { tooltipInfo, selectedNgId } = this.state;
-        const { neighborhoods, allReports, locations } = this.props;
+        const { neighborhoods, locations } = this.props;
+
+        const neigh = this.getSelectedNeighborhood();
+        const ngReport = this.getNgReports(neigh);
+        const listingsCount = this.getNgListingsCount(neigh);
 
         return (
             <React.Fragment>
@@ -223,7 +245,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     <StaticMap mapStyle="mapbox://styles/mapbox/dark-v9" width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
                 </DeckGL>}
                 {tooltipInfo && <NeighTooltip {...tooltipInfo} />}
-                {selectedNgId && allReports && locations && <Pannel clickHandler={this.closePannelHandler} data={allReports[selectedNgId]} total={locations[selectedNgId].length} />}
+                {ngReport && <NgReportsPanel listingsCount={listingsCount} ng={ngReport} onClose={this.closePannelHandler} ></NgReportsPanel>}
             </React.Fragment>
         );
     }

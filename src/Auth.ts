@@ -1,10 +1,12 @@
 import * as auth0 from 'auth0-js';
+import { Auth0DecodedHash, AuthorizeOptions } from 'auth0-js';
 
 class Auth {
-    profile: any;
+    idTokenPayload?: any;
     auth0: auth0.WebAuth;
-    idToken: any;
-    expiresAt: number | null;
+    idToken?: string;
+    expiresAt?: number;
+    appState?: any;
 
   constructor() {
     this.auth0 = new auth0.WebAuth({
@@ -25,7 +27,11 @@ class Auth {
   }
 
   getProfile() {
-    return this.profile;
+    return this.idTokenPayload;
+  }
+
+  getAppState() {
+    return this.appState;
   }
 
   getIdToken() {
@@ -33,11 +39,12 @@ class Auth {
   }
 
   isAuthenticated() {
+    console.log(this.idToken, this.expiresAt)
     return this.expiresAt ? new Date().getTime() < this.expiresAt : false;
   }
 
-  signIn() {
-    this.auth0.authorize();
+  signIn(authOptions?: AuthorizeOptions) {
+    this.auth0.authorize(authOptions);
   }
 
   handleAuthentication() {
@@ -53,11 +60,13 @@ class Auth {
     })
   }
 
-  setSession(authResult: any) {
+  setSession(authResult: Auth0DecodedHash) {
     this.idToken = authResult.idToken;
-    this.profile = authResult.idTokenPayload;
-    // set the time that the id token will expire at
+    this.idTokenPayload = authResult.idTokenPayload;
     this.expiresAt = authResult.idTokenPayload.exp * 1000;
+    this.appState = authResult.appState;
+    
+    console.log(authResult);
   }
 
   signOut() {

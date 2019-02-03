@@ -12,7 +12,12 @@ class Callback extends React.Component<ICallbackProps> {
 
     async componentDidMount() {
         await auth0Client.handleAuthentication();
-        this.props.history.replace('/');
+        const appState = auth0Client.getAppState();
+        if (appState && appState.redirectUrl) {
+            this.props.history.replace(appState.redirectUrl);
+        } else {
+            this.props.history.replace('/');
+        }
     }
 
     render() {
