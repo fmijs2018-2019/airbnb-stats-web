@@ -20,7 +20,7 @@ export const orderByDictionary: {[ordering: string]: number} = {
 
 export const fetchTableData = () => {
     return function (dispatch: Dispatch, getState: () => IApplicationState): Promise<{total_count: number, listings: IListing[]}> {
-        const { currentPage, pageSize, propertyTypeFilter, roomTypeFilter, neighborhoodFilter, fromDate, toDate, orderBy, order } = getState().listingsGrid;
+        const { currentPage, pageSize, propertyTypeFilter, roomTypeFilter, neighborhoodFilter, fromDate, toDate, fromPrice, toPrice, orderBy, order } = getState().listingsGrid;
         const take = pageSize;
         const skip = currentPage * pageSize;
         const propTypes = Object.keys(propertyTypeFilter)
@@ -34,7 +34,7 @@ export const fetchTableData = () => {
             .map(id => +id);
         const ord = orderByDictionary[`${orderBy}_${order}`] || 0;
 
-        const promise = listingsApiClient.getAllListings(skip, take, ngs, propTypes, roomTypes, fromDate, toDate, ord);
+        const promise = listingsApiClient.getAllListings(skip, take, ngs, propTypes, roomTypes, fromDate, toDate, fromPrice, toPrice, ord);
 
         promise.then((data: {total_count: number, listings: IListing[]}) => {
             dispatch(fetchTableDataSuccess(data));
@@ -108,6 +108,10 @@ export const SET_PAGE_SIZE = 'SET_PAGE_SIZE';
 export const SET_PAGE = 'SET_PAGE';
 export const SET_ORDER = 'SET_ORDER';
 export const SET_ORDERBY = 'SET_ORDERBY';
+export const SET_FROM_DATE = 'SET_FROM_DATE';
+export const SET_TO_DATE = 'SET_TO_DATE';
+export const SET_FROM_PRICE = 'SET_FROM_PRICE';
+export const SET_TO_PRICE = 'SET_TO_PRICE';
 export const CLEAR_FILTERS = 'CLEAR_FILTERS';
 
 export const setNeighborhoodsFilter = (id: string, checked: boolean): IReduxAction => ({
@@ -143,6 +147,26 @@ export const setOrder = (order: 'desc' | 'asc'): IReduxAction => ({
 export const setOrderBy = (orderBy: string): IReduxAction => ({
     type: SET_ORDERBY,
     payload: orderBy
+});
+
+export const setFromDate = (date: string): IReduxAction => ({
+    type: SET_FROM_DATE,
+    payload: date
+});
+
+export const setToDate = (date: string): IReduxAction => ({
+    type: SET_TO_DATE,
+    payload: date
+});
+
+export const setFromPrice = (price: number): IReduxAction => ({
+    type: SET_FROM_PRICE,
+    payload: price
+});
+
+export const setToPrice = (price: number): IReduxAction => ({
+    type: SET_TO_PRICE,
+    payload: price
 });
 
 export const clearFilters = (): IReduxAction => ({

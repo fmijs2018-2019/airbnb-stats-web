@@ -5,7 +5,7 @@ import { IListingTableDto } from 'src/models/listings/ListingTableDto';
 import ListingsFilters from './components/ListingsFilters';
 import { IFilters } from 'src/models/grid/filtersData';
 import { IApplicationState } from 'src/redux/store';
-import { fetchFiltersData, setNeighborhoodsFilter, setPropertyTypesFilter, setRoomTypesFilter, fetchTableData, setPage, setPageSize, setOrder, setOrderBy, clearFilters } from 'src/redux/actions/listingsGridActions';
+import { fetchFiltersData, setNeighborhoodsFilter, setPropertyTypesFilter, setRoomTypesFilter, fetchTableData, setPage, setPageSize, setOrder, setOrderBy, clearFilters, setFromDate, setToDate, setFromPrice, setToPrice } from 'src/redux/actions/listingsGridActions';
 import { connect } from 'react-redux';
 import { IListing } from 'src/models/listings/Listing';
 
@@ -42,6 +42,10 @@ interface IListingsSceneStateProps extends IFilters {
     numberOfPages: number;
     order: 'asc' | 'desc';
     orderBy: string;
+    fromDate?: string;
+    toDate?: string;
+    fromPrice?: number,
+    toPrice?: number
 }
 
 interface IListingsSceneActionProps {
@@ -53,6 +57,10 @@ interface IListingsSceneActionProps {
     setPageSize: (size: number) => void;
     setOrder: (order: 'asc' | 'desc') => void;
     setOrderBy: (orderBy: string) => void;
+    setFromDate: (newDate: string) => void;
+    setToDate: (newDate: string) => void;
+    setFromPrice: (price: number) => void;
+    setToPrice: (price: number) => void;
     clearFilters: () => void;
     fetchTableData: () => Promise<{ total_count: number, listings: IListing[] }>;
 }
@@ -67,7 +75,8 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
     }
 
     render() {
-        const { classes, roomTypeFilter, propertyTypeFilter, neighborhoodFilter, listings, pageSize, numberOfPages, totalCount, currentPage } = this.props;
+        const { classes, roomTypeFilter, propertyTypeFilter, neighborhoodFilter, listings, pageSize,
+                numberOfPages, totalCount, currentPage, fromDate, toDate, fromPrice, toPrice } = this.props;
         const filters: IFilters = { roomTypeFilter, propertyTypeFilter, neighborhoodFilter }
         const rows = (listings || []).map(v => {
             const row: IListingTableDto = {
@@ -91,6 +100,14 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
                     <Typography style={{ marginTop: '20px', textAlign: 'center' }} variant="h6" >Filters</Typography>
                     {filters && <ListingsFilters
                         filters={filters}
+                        fromDate={fromDate}
+                        toDate={toDate}
+                        fromPrice={fromPrice}
+                        toPrice={toPrice}
+                        onFromDateChange={this.onFromDateChange}
+                        onToDateChange={this.onToDateChange}
+                        onFromPriceChange={this.onFromPriceChange}
+                        onToPriceChange={this.onToPriceChange}
                         onPTChange={this.props.setPropertyTypeFilter}
                         onRTChange={this.props.setRoomTypeFilter}
                         onNgChange={this.props.setNeighborhoodFilter}
@@ -141,6 +158,22 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
         this.props.setOrderBy(orderBy);
         this.props.fetchTableData();
     }
+
+    onFromDateChange = (newDate: string) => {
+        this.props.setFromDate(newDate);
+    }
+
+    onToDateChange = (newDate: string) => {
+        this.props.setToDate(newDate);
+    }
+
+    onFromPriceChange = (value: number) => {
+        this.props.setFromPrice(value);
+    }
+
+    onToPriceChange = (value: number) => {
+        this.props.setToPrice(value);
+    }
 };
 
 const mapStateToProps = (state: IApplicationState) => {
@@ -154,7 +187,11 @@ const mapStateToProps = (state: IApplicationState) => {
         currentPage: state.listingsGrid.currentPage,
         pageSize: state.listingsGrid.pageSize,
         order: state.listingsGrid.order,
-        orderBy: state.listingsGrid.orderBy
+        orderBy: state.listingsGrid.orderBy,
+        fromDate: state.listingsGrid.fromDate,
+        toDate: state.listingsGrid.toDate,
+        fromPrice: state.listingsGrid.fromPrice,
+        toPrice: state.listingsGrid.toPrice
     }
 };
 
@@ -167,8 +204,12 @@ const mapDispatchToProps = (dispatch: any) => ({
     setPageSize: (size: number) => dispatch(setPageSize(size)),
     setOrder: (order: 'asc' | 'desc') => dispatch(setOrder(order)),
     setOrderBy: (orderBy: string) => dispatch(setOrderBy(orderBy)),
+    setFromDate: (newDate: string) => dispatch(setFromDate(newDate)),
+    setToDate: (newDate: string) => dispatch(setToDate(newDate)),
+    setFromPrice: (price: number) => dispatch(setFromPrice(price)),
+    setToPrice: (price: number) => dispatch(setToPrice(price)),
     clearFilters: () => dispatch(clearFilters()),
-    fetchTableData: (): Promise<{ total_count: number, listings: IListing[] }> => dispatch(fetchTableData())
+    fetchTableData: (): Promise<{ total_count: number, listings: IListing[] }> => dispatch(fetchTableData()),
 });
 
 const sceneWithStyles = withStyles(styles)(ListingsScene);

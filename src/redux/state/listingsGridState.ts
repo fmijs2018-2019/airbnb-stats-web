@@ -11,8 +11,10 @@ export interface IListingsGridState extends IFilters {
     currentPage: number,
     orderBy: string,
     order: 'asc' | 'desc',
-    fromDate?: Date,
-    toDate?: Date,
+    fromDate?: string,
+    toDate?: string,
+    fromPrice?: number,
+    toPrice?: number,
     totalCount: number,
     numberOfPages: number,
 }

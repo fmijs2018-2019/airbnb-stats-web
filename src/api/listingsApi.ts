@@ -13,7 +13,7 @@ class ListingsApi {
         return httpClient.get<IFiltersDataCollections>('http://localhost:8080/listings/filters-data');
     }
 
-    getAllListings(skip: number, take: number, ngs?: number[], propTypes?: number[], roomTypes?: number[], from?: Date, to?: Date, orderBy?: number) {
+    getAllListings(skip: number, take: number, ngs?: number[], propTypes?: number[], roomTypes?: number[], fromDate?: string, toDate?: string, fromPrice?: number, toPrice?: number, orderBy?: number) {
         const config: AxiosRequestConfig = {
             params: {skip, take}
         }
@@ -34,12 +34,17 @@ class ListingsApi {
             config.params['room_types'] = roomTypes.join(',');
         }
 
-        if(from) {
-            config.params['from_date'] = from.toString();
+        if(fromDate && toDate) {
+            config.params['from_date'] = fromDate;
+            config.params['to_date'] = toDate;
         }
 
-        if(to) {
-            config.params['to_date'] = to.toString();
+        if(fromPrice) {
+            config.params['from_price'] = fromPrice;
+        }
+
+        if(toPrice) {
+            config.params['to_price'] = toPrice;
         }
 
         return httpClient.get<{total_count: number, listings: IListing[]}>('http://localhost:8080/listings', config);

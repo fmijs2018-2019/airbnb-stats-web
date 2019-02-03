@@ -1,6 +1,10 @@
 import { IListingsGridState, initialListingsGridState } from '../state/listingsGridState';
 import { IReduxAction } from 'src/models/ReduxAction';
-import { FETCH_FILTERS_DATA_ERROR, FETCH_FILTERS_DATA_SUCCESS, SET_NEIGHBORHOODS_FILTER, SET_PROPERTY_TYPES_FILTER, SET_ROOM_TYPES_FILTER, FETCH_TABLE_DATA_SUCCESS, FETCH_TABLE_DATA_ERROR, SET_PAGE, SET_PAGE_SIZE, CLEAR_FILTERS, SET_ORDER, SET_ORDERBY } from '../actions/listingsGridActions';
+import { FETCH_FILTERS_DATA_ERROR, FETCH_FILTERS_DATA_SUCCESS,
+         SET_NEIGHBORHOODS_FILTER, SET_PROPERTY_TYPES_FILTER,
+         SET_ROOM_TYPES_FILTER, FETCH_TABLE_DATA_SUCCESS,
+         FETCH_TABLE_DATA_ERROR, SET_PAGE, SET_PAGE_SIZE, 
+         CLEAR_FILTERS, SET_ORDER, SET_ORDERBY, SET_FROM_DATE, SET_TO_DATE, SET_FROM_PRICE, SET_TO_PRICE } from '../actions/listingsGridActions';
 
 export const deepClone = (obj: object) => {
     return JSON.parse(JSON.stringify(obj));
@@ -41,6 +45,14 @@ export const listingsGridReducer = (state: IListingsGridState = initialListingsG
             return { ...state, order: action.payload };
         case SET_ORDERBY:
             return { ...state, orderBy: action.payload };
+        case SET_FROM_DATE:
+            return { ...state, fromDate: action.payload };
+        case SET_TO_DATE:
+            return { ...state, toDate: action.payload };
+        case SET_FROM_PRICE:
+            return { ...state, fromPrice: action.payload };
+        case SET_TO_PRICE:
+            return { ...state, toPrice: action.payload };
         case CLEAR_FILTERS:
             let ngFilterNew = deepClone(state.neighborhoodFilter);
             let rtFilterNew = deepClone(state.roomTypeFilter);
@@ -50,7 +62,14 @@ export const listingsGridReducer = (state: IListingsGridState = initialListingsG
             Object.keys(rtFilterNew).forEach(key => rtFilterNew[key].checked = false);
             Object.keys(ptFilterNew).forEach(key => ptFilterNew[key].checked = false);
 
-            return { ...state, neighborhoodFilter: ngFilterNew, roomTypeFilter: rtFilterNew, propertyTypeFilter: ptFilterNew }
+            return { ...state,
+                    neighborhoodFilter: ngFilterNew,
+                    roomTypeFilter: rtFilterNew,
+                    propertyTypeFilter: ptFilterNew,
+                    fromDate: undefined,
+                    toDate: undefined,
+                    fromPrice: undefined,
+                    toPrice: undefined };
         case FETCH_TABLE_DATA_SUCCESS:
             const { total_count, listings } = action.payload;
             let numberOfPages = Math.ceil(total_count / state.pageSize);
