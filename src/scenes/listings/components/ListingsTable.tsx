@@ -65,12 +65,6 @@ class ListingsTable extends React.Component<IListingsTableProps> {
                 renderCell: ({ cellData }: any) => cellData && <ListingNeighborhoodColumn neighborhood={cellData} />,
                 disableSort: true,
             },
-            // {
-            //     width: 400,
-            //     label: 'Neighborhood Overview',
-            //     dataKey: 'neighborhoodOverview',
-            //     disableSort: true,
-            // },
             {
                 width: 140,
                 label: 'Accommodates',

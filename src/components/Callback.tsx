@@ -1,9 +1,14 @@
+import { Auth0DecodedHash } from 'auth0-js';
 import * as React from 'react';
-import { withRouter, RouteComponentProps } from 'react-router-dom';
-import auth0Client from 'src/Auth';
-import { CircularProgress } from '@material-ui/core';
+import { connect } from 'react-redux';
+import { RouteComponentProps, withRouter } from 'react-router-dom';
+import { handleAuthentication } from 'src/redux/actions/authActions';
+import { IApplicationState } from 'src/redux/store';
+import { LoadingScreen } from './SecuredRoute';
 
-interface ICallbackProps extends RouteComponentProps{}
+interface ICallbackProps extends RouteComponentProps {
+    handleAuthentication: () => Promise<Auth0DecodedHash>
+}
 
 class Callback extends React.Component<ICallbackProps> {
     constructor(props: Readonly<ICallbackProps>) {
@@ -11,18 +16,34 @@ class Callback extends React.Component<ICallbackProps> {
     }
 
     async componentDidMount() {
-        await auth0Client.handleAuthentication();
-        const appState = auth0Client.getAppState();
-        if (appState && appState.redirectUrl) {
-            this.props.history.replace(appState.redirectUrl);
-        } else {
-            this.props.history.replace('/');
+        try { 
+            const result = await this.props.handleAuthentication();
+            const { appState } = result;
+
+            if (appState && appState.redirectUrl) {
+                this.props.history.replace(appState.redirectUrl);
+            } else {
+                this.props.history.replace("/dashboard");
+            }
+
+        } catch (error) {
+            //todo: handle error
+            console.log("Auth error", error);
         }
     }
 
     render() {
-        return <CircularProgress />;
+        return <LoadingScreen />;
     }
 }
 
-export default withRouter(Callback);
+const cmpWithRouter = withRouter(Callback);
+
+const mapStateToProps = (state: IApplicationState) => ({
+});
+
+const mapDispatchToProps = (dispatch: any) => ({
+    handleAuthentication: (): Promise<Auth0DecodedHash> => dispatch(handleAuthentication()),
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(cmpWithRouter);

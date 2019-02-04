@@ -12,6 +12,7 @@ import { RouteComponentProps, withRouter } from 'react-router';
 import auth0Client from 'src/Auth';
 import { Link } from 'react-router-dom';
 import GithubIcon from 'src/components/icnos/GithubIcon';
+import { IProfilePayload } from 'src/models/auth/IProfilePayload';
 
 const styles = (theme: Theme) => createStyles({
     navBar: {
@@ -94,7 +95,10 @@ const styles = (theme: Theme) => createStyles({
 });
 
 interface INavigationBarProps extends RouteComponentProps, WithStyles<typeof styles> {
-    // isFetching: boolean;
+    onSignOut: () => void;
+    onSignIn: () => void;
+    isAuth: boolean;
+    idTokenPayload?: IProfilePayload;
 };
 
 interface INavigationBarState {
@@ -105,18 +109,12 @@ interface INavigationBarState {
 class NavigationBar extends React.Component<INavigationBarProps, INavigationBarState> {
     constructor(props: Readonly<INavigationBarProps>) {
         super(props);
-        this.signOut = this.signOut.bind(this);
 
         this.state = {
             isDrawerOpen: false,
             headerColor: 'rgba(32, 35, 42, 0.8)',
         };
     }
-
-    signOut(): void {
-        auth0Client.signOut();
-        this.props.history.replace('/');
-    };
 
     toggleDrawer = (isDrawerOpen: boolean) => () => {
         let state: INavigationBarState = { ...this.state, isDrawerOpen };
@@ -146,7 +144,7 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
     }
 
     render() {
-        const { classes } = this.props;
+        const { classes, isAuth, onSignOut, onSignIn } = this.props;
         const { isDrawerOpen, headerColor } = this.state;
 
         return (
@@ -165,7 +163,8 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
                             <GithubIcon />
                         </IconButton>
                         <Avatar color="inherit" className={classes.avatar} style={{color: headerColor}}>OP</Avatar>
-                        <Button className={classes.logInOutBtn} color="inherit">LogOut</Button>
+                        {!isAuth && <Button onClick={onSignIn} className={classes.logInOutBtn} color="inherit">LogIn</Button>}
+                        {isAuth && <Button onClick={onSignOut} className={classes.logInOutBtn} color="inherit">LogOut</Button>}
                     </Toolbar>
                 </AppBar>
                 <Drawer

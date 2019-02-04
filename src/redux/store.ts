@@ -6,26 +6,31 @@ import { INeighborhoodsState, initialNeighborhoodsState } from './state/neighbor
 import { ICommonState, initialCommonState } from './state/commonState';
 import { composeWithDevTools } from 'redux-devtools-extension';
 import { IListingsGridState, initialListingsGridState } from './state/listingsGridState';
+import { IAuthState, initialAuthState } from './state/authState';
 
 export interface IApplicationState {
     locations: ILocationsState,
     neighborhoods: INeighborhoodsState,
     common: ICommonState,
-    listingsGrid: IListingsGridState
+    listingsGrid: IListingsGridState,
+    auth: IAuthState,
 }
 
 export const initialAppState: IApplicationState = {
     locations: initialLocationsState,
     neighborhoods: initialNeighborhoodsState,
     common: initialCommonState,
-    listingsGrid: initialListingsGridState
+    listingsGrid: initialListingsGridState,
+    auth: initialAuthState,
 }
 
-export default createStore(
+const store = createStore(
     rootReducer,
     initialAppState,
     composeWithDevTools(
         applyMiddleware(thunk),
     )
 );
+
+export default store;
 

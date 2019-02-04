@@ -2,89 +2,60 @@ import * as auth0 from 'auth0-js';
 import { Auth0DecodedHash, AuthorizeOptions } from 'auth0-js';
 
 class Auth {
-    idTokenPayload?: any;
-    auth0: auth0.WebAuth;
-    idToken?: string;
-    expiresAt?: number;
-    appState?: any;
+	auth0: auth0.WebAuth;
 
-  constructor() {
-    this.auth0 = new auth0.WebAuth({
-      // the following three lines MUST be updated
-      domain: 'airbnb-stats.eu.auth0.com',
-      audience: 'https://airbnb-stats.eu.auth0.com/userinfo',
-      clientID: 'jz1zd7BI5Lx5UjcU3Ua62XkVPqvZOuND',
-      redirectUri: 'http://localhost:3000/callback',
-      responseType: 'id_token',
-      scope: 'openid profile'
-    });
+	constructor() {
+		this.auth0 = new auth0.WebAuth({
+			// the following three lines MUST be updated
+			domain: 'airbnb-stats.eu.auth0.com',
+			audience: 'https://airbnb-stats.eu.auth0.com/userinfo',
+			clientID: 'jz1zd7BI5Lx5UjcU3Ua62XkVPqvZOuND',
+			redirectUri: 'http://localhost:3000/callback',
+			responseType: 'token id_token',
+    		scope: 'openid'
+		});
 
-    this.getProfile = this.getProfile.bind(this);
-    this.handleAuthentication = this.handleAuthentication.bind(this);
-    this.isAuthenticated = this.isAuthenticated.bind(this);
-    this.signIn = this.signIn.bind(this);
-    this.signOut = this.signOut.bind(this);
-  }
+		this.handleAuthentication = this.handleAuthentication.bind(this);
+		this.signIn = this.signIn.bind(this);
+		this.signOut = this.signOut.bind(this);
+	}
 
-  getProfile() {
-    return this.idTokenPayload;
-  }
+	signIn(authOptions?: AuthorizeOptions) {
+		this.auth0.authorize(authOptions);
+	}
 
-  getAppState() {
-    return this.appState;
-  }
+	handleAuthentication(): Promise<Auth0DecodedHash> {
+		return new Promise((resolve, reject) => {
+			this.auth0.parseHash((err, authResult) => {
+				if (err) {
+					return reject(err);
+				}
+				if (!authResult || !authResult.idToken) {
+					return reject(err);
+				}
+				resolve(authResult);
+			});
+		})
+	}
 
-  getIdToken() {
-    return this.idToken;
-  }
+	signOut() {
+		this.auth0.logout({
+			returnTo: 'http://localhost:3000',
+			clientID: 'jz1zd7BI5Lx5UjcU3Ua62XkVPqvZOuND',
+		});
+	}
 
-  isAuthenticated() {
-    console.log(this.idToken, this.expiresAt)
-    return this.expiresAt ? new Date().getTime() < this.expiresAt : false;
-  }
+	silentAuth(): Promise<Auth0DecodedHash> {
+		return new Promise((resolve, reject) => {
+			this.auth0.checkSession({}, (err, authResult) => {
+				if (err) {
+					return reject(err);
+				}
 
-  signIn(authOptions?: AuthorizeOptions) {
-    this.auth0.authorize(authOptions);
-  }
-
-  handleAuthentication() {
-    return new Promise((resolve, reject) => {
-      this.auth0.parseHash((err, authResult) => {
-        if (err) return reject(err);
-        if (!authResult || !authResult.idToken) {
-          return reject(err);
-        }
-        this.setSession(authResult);
-        resolve();
-      });
-    })
-  }
-
-  setSession(authResult: Auth0DecodedHash) {
-    this.idToken = authResult.idToken;
-    this.idTokenPayload = authResult.idTokenPayload;
-    this.expiresAt = authResult.idTokenPayload.exp * 1000;
-    this.appState = authResult.appState;
-    
-    console.log(authResult);
-  }
-
-  signOut() {
-    this.auth0.logout({
-      returnTo: 'http://localhost:3000',
-      clientID: 'jz1zd7BI5Lx5UjcU3Ua62XkVPqvZOuND',
-    });
-  }
-
-  silentAuth() {
-    return new Promise((resolve, reject) => {
-      this.auth0.checkSession({}, (err, authResult) => {
-        if (err) return reject(err);
-        this.setSession(authResult);
-        resolve();
-      });
-    });
-  }
+				resolve(authResult);
+			});
+		});
+	}
 }
 
 const auth0Client = new Auth();

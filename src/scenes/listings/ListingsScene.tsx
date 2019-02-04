@@ -8,6 +8,7 @@ import { IApplicationState } from 'src/redux/store';
 import { fetchFiltersData, setNeighborhoodsFilter, setPropertyTypesFilter, setRoomTypesFilter, fetchTableData, setPage, setPageSize, setOrder, setOrderBy, clearFilters } from 'src/redux/actions/listingsGridActions';
 import { connect } from 'react-redux';
 import { IListing } from 'src/models/listings/Listing';
+import Layout from 'src/Layout';
 
 const styles = createStyles({
     listingsFilters: {
@@ -85,7 +86,7 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
             };
             return row;
         })
-        return <React.Fragment>
+        return <Layout>
             <div className={classes.listingsFilters}>
                 <div className={classes.filtersContainer}>
                     <Typography style={{ marginTop: '20px', textAlign: 'center' }} variant="h6" >Filters</Typography>
@@ -110,7 +111,7 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
                     order={this.props.order}
                     orderBy={this.props.orderBy} />
             </div>
-        </React.Fragment>
+        </Layout>
     }
 
     onPageChange = (page: number) => {

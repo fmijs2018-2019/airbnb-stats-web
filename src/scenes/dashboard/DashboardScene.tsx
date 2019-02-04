@@ -14,6 +14,7 @@ import NeighTooltip, { NeighTooltipProps } from './components/NeighTooltip';
 import Pannel from 'src/components/Panel';
 import { deepClone } from 'src/redux/reducers/listingsGridReducer';
 import NgReportsPanel from './components/NgReportsPanel';
+import Layout from 'src/Layout';
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
@@ -235,7 +236,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
         const listingsCount = this.getNgListingsCount(neigh);
 
         return (
-            <React.Fragment>
+            <Layout>
                 {neighborhoods && locations && <DeckGL
                     viewState={this.state.viewState}
                     layers={this.getLayers()}
@@ -246,7 +247,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                 </DeckGL>}
                 {tooltipInfo && <NeighTooltip {...tooltipInfo} />}
                 {ngReport && <NgReportsPanel listingsCount={listingsCount} ng={ngReport} onClose={this.closePannelHandler} ></NgReportsPanel>}
-            </React.Fragment>
+            </Layout>
         );
     }
 };

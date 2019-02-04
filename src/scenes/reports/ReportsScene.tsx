@@ -1,9 +1,10 @@
 import * as React from 'react';
+import Layout from 'src/Layout';
 
 export default class ReportsScene extends React.Component {
     render() {
-        return <React.Fragment>
+        return <Layout>
             <div>Reports</div>
-        </React.Fragment>
+        </Layout>
     }
 }
