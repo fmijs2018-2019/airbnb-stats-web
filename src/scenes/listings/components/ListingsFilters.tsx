@@ -1,9 +1,11 @@
-import { createStyles, Theme, WithStyles, withStyles, Typography, FormControlLabel, Checkbox, Button } from '@material-ui/core';
+import { createStyles, Theme, WithStyles, withStyles, Typography, FormControlLabel, Checkbox, Button, Badge } from '@material-ui/core';
 import * as React from 'react';
 import '../../../index.css';
 import ExpPanel from '../../../components/ExpPanel';
 import { IFilters, INeighborhoodFilter } from 'src/models/grid/filtersData';
 import * as _ from 'lodash';
+import FromToDatePicker from 'src/components/FromToDatePicker';
+import NumberRange from 'src/components/NumberRange';
 
 const styles = (theme: Theme) => createStyles({
     sidebar: {
@@ -27,9 +29,17 @@ const styles = (theme: Theme) => createStyles({
 
 interface IListingFiltersProps extends WithStyles<typeof styles> {
     filters: IFilters;
+    fromDate?: string;
+    toDate?: string;
+    fromPrice?: number;
+    toPrice?: number;
+    onFromPriceChange: (from: number) => void;
+    onToPriceChange: (from: number) => void;
     onNgChange: (id: string, checked: boolean) => void;
     onRTChange: (id: string, checked: boolean) => void;
     onPTChange: (id: string, checked: boolean) => void;
+    onFromDateChange: (newDate: string) => void;
+    onToDateChange: (newDate: string) => void;
     onApply: () => void;
     onClear: () => void;
 }
@@ -62,24 +72,39 @@ class ListingsFilters extends React.Component<IListingFiltersProps, IListingFilt
         this.props.onRTChange(id, checked);
     }
 
-    applyHandler = () => {
-        this.props.onApply();
-    }
+    getFiltersCount = (filtersCollection: any) => {
+        let count = 0;
+        Object.keys(filtersCollection).forEach(key => {
+            if (filtersCollection[key].checked) {
+                count++;
+            }
+        });
 
-    clearHandler = () => {
-        this.props.onClear();
+        return count;
     }
 
     render() {
-        const { classes, filters: { neighborhoodFilter: neighborhoods, roomTypeFilter: roomTypes, propertyTypeFilter: propertyTypes } } = this.props;
+        const { classes, onApply, onClear, fromDate, toDate, fromPrice, toPrice,
+            onFromDateChange, onToDateChange, onFromPriceChange, onToPriceChange,
+            filters: {
+                neighborhoodFilter: neighborhoods,
+                roomTypeFilter: roomTypes,
+                propertyTypeFilter: propertyTypes } } = this.props;
         const { expanded } = this.state;
+        const ngFiltersCount = this.getFiltersCount(neighborhoods);
+        const rtFiltersCount = this.getFiltersCount(roomTypes);
+        const ptFiltersCount = this.getFiltersCount(propertyTypes);
 
         return <React.Fragment>
             <ExpPanel
                 className={classes.expansionPanel}
                 expanded={expanded === 'panel1'}
                 onChange={this.createOnExpandHandler('panel1')}
-                summary={<Typography>Neighborhood</Typography>}>
+                summary={
+                    <Badge badgeContent={ngFiltersCount} color="primary" invisible={ngFiltersCount === 0}>
+                        <Typography>Neighborhood</Typography>
+                    </Badge>
+                }>
                 {Object.keys(neighborhoods).map(key => {
                     const ng = neighborhoods[key];
                     return <div key={key} className={classes.checkbox}>
@@ -93,7 +118,11 @@ class ListingsFilters extends React.Component<IListingFiltersProps, IListingFilt
                 className={classes.expansionPanel}
                 expanded={expanded === 'panel2'}
                 onChange={this.createOnExpandHandler('panel2')}
-                summary={<Typography>Room Type</Typography>}>
+                summary={
+                    <Badge badgeContent={rtFiltersCount} color="primary" invisible={rtFiltersCount === 0}>
+                        <Typography>Room Type</Typography>
+                    </Badge>
+                }>
                 {Object.keys(roomTypes).map(key => {
                     const rt = roomTypes[key];
                     return <div key={key} className={classes.checkbox}>
@@ -104,10 +133,14 @@ class ListingsFilters extends React.Component<IListingFiltersProps, IListingFilt
                 })}
             </ExpPanel>
             <ExpPanel
-                className={classes.expansionPanelLast}
+                className={classes.expansionPanel}
                 expanded={expanded === 'panel3'}
                 onChange={this.createOnExpandHandler('panel3')}
-                summary={<Typography>Property Type</Typography>}>
+                summary={
+                    <Badge badgeContent={ptFiltersCount} color="primary" invisible={ptFiltersCount === 0}>
+                        <Typography>Property Type</Typography>
+                    </Badge>
+                }>
                 {Object.keys(propertyTypes).map(key => {
                     const pt = propertyTypes[key];
                     return <div key={key} className={classes.checkbox}>
@@ -117,9 +150,33 @@ class ListingsFilters extends React.Component<IListingFiltersProps, IListingFilt
                     </div>
                 })}
             </ExpPanel>
-            <Button variant="outlined" color="primary" onClick={this.clearHandler} className={classes.button}>Clear</Button>
-            <Button variant="contained" color="primary" onClick={this.applyHandler} className={classes.button}>Apply</Button>
-        </React.Fragment>;
+            <ExpPanel
+                className={classes.expansionPanel}
+                expanded={expanded === 'panel4'}
+                onChange={this.createOnExpandHandler('panel4')}
+                summary={<Typography>Availability Range</Typography>}>
+                <FromToDatePicker
+                    from={fromDate}
+                    to={toDate}
+                    fromChangeHandler={onFromDateChange}
+                    toChangeHandler={onToDateChange}
+                ></FromToDatePicker>
+            </ExpPanel>
+            <ExpPanel
+                className={classes.expansionPanelLast}
+                expanded={expanded === 'panel5'}
+                onChange={this.createOnExpandHandler('panel5')}
+                summary={<Typography>Price Range</Typography>}>
+                <NumberRange
+                    onFromChange={onFromPriceChange}
+                    onToChange={onToPriceChange}
+                    from={fromPrice}
+                    to={toPrice}
+                />
+            </ExpPanel>
+            <Button variant="outlined" color="primary" onClick={onClear} className={classes.button}>Clear</Button>
+            <Button variant="contained" color="primary" onClick={onApply} className={classes.button}>Apply</Button>
+        </React.Fragment >;
     }
 }
 
