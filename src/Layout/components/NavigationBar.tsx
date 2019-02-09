@@ -9,10 +9,10 @@ import MenuIcon from '@material-ui/icons/Menu';
 import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
 import { RouteComponentProps, withRouter } from 'react-router';
-import auth0Client from 'src/Auth';
 import { Link } from 'react-router-dom';
 import GithubIcon from 'src/components/icnos/GithubIcon';
 import { IProfilePayload } from 'src/models/auth/IProfilePayload';
+import { AccountCircle } from '@material-ui/icons';
 
 const styles = (theme: Theme) => createStyles({
     navBar: {
@@ -32,9 +32,6 @@ const styles = (theme: Theme) => createStyles({
         padding: 0,
     },
     avatar: {
-        margin: 10,
-        paddingRight: '1px',
-        paddingTop: '1px',
         backgroundColor: 'white',
         display: 'inline-flex',
         fontSize: '1.35em',
@@ -126,7 +123,7 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
 
     updateHeaderColorOnClose = () => {
         const { isDrawerOpen } = this.state;
-        if(!isDrawerOpen) {
+        if (!isDrawerOpen) {
             this.setState({
                 headerColor: 'rgba(32, 35, 42, 0.8)'
             })
@@ -144,12 +141,12 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
     }
 
     render() {
-        const { classes, isAuth, onSignOut, onSignIn } = this.props;
+        const { classes, isAuth, onSignOut, onSignIn, idTokenPayload } = this.props;
         const { isDrawerOpen, headerColor } = this.state;
 
         return (
             <React.Fragment>
-                <AppBar className={classes.navBar} position="static" style={{backgroundColor: headerColor }}>
+                <AppBar className={classes.navBar} position="static" style={{ backgroundColor: headerColor }}>
                     <Toolbar classes={{ root: classes.toolbar }}>
                         <Typography className={classes.logoText} variant="h6" color="inherit" noWrap>
                             Amsterdam
@@ -159,10 +156,10 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
                         </IconButton>
                         {this.getButtonsList(classes.menuItem)}
                         <div className={classes.grow} />
-                        <IconButton style={{ padding: 0, color: 'white' }}>
-                            <GithubIcon />
+                        <IconButton style={{ padding: 0, color: 'white', margin: '0 15px' }} target="_black" href="https://github.com/fmijs2018-2019">
+                            <GithubIcon style={{ height: '30px', width: '30px' }} />
                         </IconButton>
-                        <Avatar color="inherit" className={classes.avatar} style={{color: headerColor}}>OP</Avatar>
+                        {idTokenPayload && <Avatar color="inherit" className={classes.avatar} src={idTokenPayload.picture} style={{ color: headerColor }} />}
                         {!isAuth && <Button onClick={onSignIn} className={classes.logInOutBtn} color="inherit">LogIn</Button>}
                         {isAuth && <Button onClick={onSignOut} className={classes.logInOutBtn} color="inherit">LogOut</Button>}
                     </Toolbar>

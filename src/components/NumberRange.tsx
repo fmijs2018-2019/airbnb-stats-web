@@ -1,5 +1,6 @@
 import * as React from 'react';
 import TextField from '@material-ui/core/TextField';
+import InputAdornment from '@material-ui/core/InputAdornment';
 
 interface INumberRange {
 	onFromChange: (value: number) => void,
@@ -19,8 +20,9 @@ export default class NumberRange extends React.Component<INumberRange> {
 				onChange={(e: any) => { onFromChange(e.target.value) }}
 				type="number"
 				label="From"
+				placeholder="$"
 				InputProps={{style:{display: 'inline', marginRight: '15px'}}}
-				inputProps={{style:{width: '75px', padding: '7px'}}}
+				inputProps={{style:{width: '75px', padding: '7px'}, }}
 				InputLabelProps={{
 					shrink: true,
 				}}
@@ -32,6 +34,7 @@ export default class NumberRange extends React.Component<INumberRange> {
 				value={to || ''}
 				onChange={(e: any) => { onToChange(e.target.value) }}
 				type="number"
+				placeholder="$"
 				label="To"
 				InputProps={{style:{display: 'inline'}}}							
 				inputProps={{style:{width: '75px', padding: '7px'}}}							

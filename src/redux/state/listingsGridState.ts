@@ -1,6 +1,5 @@
 import { IFilters } from 'src/models/grid/filtersData';
 import { IError } from 'src/models/Error';
-import { IListingTableDto } from 'src/models/listings/ListingTableDto';
 import { IListing } from 'src/models/listings/Listing';
 
 export interface IListingsGridState extends IFilters {

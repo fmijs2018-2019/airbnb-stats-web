@@ -12,7 +12,7 @@ class Auth {
 			clientID: 'jz1zd7BI5Lx5UjcU3Ua62XkVPqvZOuND',
 			redirectUri: 'http://localhost:3000/callback',
 			responseType: 'token id_token',
-    		scope: 'openid'
+    		scope: 'openid profile email'
 		});
 
 		this.handleAuthentication = this.handleAuthentication.bind(this);

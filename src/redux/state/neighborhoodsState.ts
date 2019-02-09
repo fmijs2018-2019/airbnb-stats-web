@@ -1,4 +1,4 @@
-import { INeighborhood, IReportsData, INeighborhoodDetailed, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
+import { IReportsData, INeighborhoodDetailed, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
 import { IError } from 'src/models/Error';
 
 export interface INeighborhoodsState {

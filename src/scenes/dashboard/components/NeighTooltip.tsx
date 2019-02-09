@@ -14,18 +14,18 @@ const styles = (theme: Theme) => createStyles({
         borderRadius: '5px',
     },
     icon: {
-        color: 'rgba(255, 0, 170, 255)'
+        color: 'rgb(65, 62, 160);'
     }
 });
 
-export interface NeighTooltipProps {
+export interface INeighTooltipProps {
     x: number;
     y: number;
     ngName: string;
     listCount: number;
 }
 
-const NeighTooltip: React.SFC<NeighTooltipProps & WithStyles<typeof styles>> = (props) => {
+const NeighTooltip: React.SFC<INeighTooltipProps & WithStyles<typeof styles>> = (props) => {
     const { ngName, listCount, x, y, classes: { tooltip, icon } } = props;
 
     let pos = {};

@@ -1,12 +1,12 @@
 import { combineReducers } from 'redux';
-import { locationsReducer } from './reducers/locationsReducer';
+import { listingsReducer } from './reducers/listingsReducer';
 import { neighborhoodsReducer } from './reducers/neighborhoodsReducer';
 import { commonReducer } from './reducers/commonReducer';
 import { listingsGridReducer } from './reducers/listingsGridReducer';
 import { authReducer } from './reducers/authReducer';
 
 export default combineReducers({
-    locations: locationsReducer,
+    listings: listingsReducer,
     neighborhoods: neighborhoodsReducer,
     common: commonReducer,
     listingsGrid: listingsGridReducer,

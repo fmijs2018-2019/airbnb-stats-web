@@ -5,16 +5,15 @@ import { IApplicationState } from 'src/redux/store';
 import { IProfilePayload } from 'src/models/auth/IProfilePayload';
 import { clearAuthState, isAuthenticated } from 'src/redux/actions/authActions';
 import auth0Client from 'src/Auth';
-import { withRouter } from 'react-router';
 
-interface Props {
+interface ILayoutProps {
     isAuth: boolean;
     children?: React.ReactNode;
     idTokenPayload?: IProfilePayload;
     clearAuthState: () => void;
 }
 
-class Layout extends React.Component<Props> {
+class Layout extends React.Component<ILayoutProps> {
 
     signIn = () => {
         auth0Client.signIn();

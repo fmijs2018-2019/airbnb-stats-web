@@ -1,7 +1,7 @@
 import { IListingLocation } from 'src/models/listings/ListingLocation';
 import { IFiltersDataCollections } from 'src/models/grid/filtersData';
 import httpClient from './httpClient';
-import { IListing } from 'src/models/listings/Listing';
+import { IListing, IListingDetailed } from 'src/models/listings/Listing';
 import { AxiosRequestConfig } from 'axios';
 
 class ListingsApi {
@@ -48,6 +48,10 @@ class ListingsApi {
         }
 
         return httpClient.get<{total_count: number, listings: IListing[]}>('http://localhost:8080/listings', config);
+    }
+
+    getListingDetailed(id: number) {
+        return httpClient.get<IListingDetailed>(`http://localhost:8080/listings/${id}`);
     }
 }
 

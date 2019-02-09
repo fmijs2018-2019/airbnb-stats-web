@@ -9,6 +9,7 @@ import { fetchFiltersData, setNeighborhoodsFilter, setPropertyTypesFilter, setRo
 import { connect } from 'react-redux';
 import { IListing } from 'src/models/listings/Listing';
 import Layout from 'src/Layout';
+import { withSnackbar, InjectedNotistackProps } from 'notistack';
 
 const styles = createStyles({
     listingsFilters: {
@@ -33,7 +34,7 @@ const styles = createStyles({
         margin: 'auto',
         width: '80%',
     }
-})
+});
 
 interface IListingsSceneStateProps extends IFilters {
     listings: IListing[] | null;
@@ -46,7 +47,7 @@ interface IListingsSceneStateProps extends IFilters {
     fromDate?: string;
     toDate?: string;
     fromPrice?: number,
-    toPrice?: number
+    toPrice?: number,
 }
 
 interface IListingsSceneActionProps {
@@ -66,10 +67,13 @@ interface IListingsSceneActionProps {
     fetchTableData: () => Promise<{ total_count: number, listings: IListing[] }>;
 }
 
-interface IListingsSceneProps extends IListingsSceneStateProps, IListingsSceneActionProps, WithStyles<typeof styles> {
+interface IListingsSceneProps extends IListingsSceneStateProps, IListingsSceneActionProps, WithStyles<typeof styles>, InjectedNotistackProps {
 }
 
-class ListingsScene extends React.Component<IListingsSceneProps> {
+interface IListingSceneState {
+}
+
+class ListingsScene extends React.Component<IListingsSceneProps, IListingSceneState> {
     componentDidMount() {
         this.props.fetchFiltersData();
         this.props.fetchTableData();
@@ -77,7 +81,7 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
 
     render() {
         const { classes, roomTypeFilter, propertyTypeFilter, neighborhoodFilter, listings, pageSize,
-                numberOfPages, totalCount, currentPage, fromDate, toDate, fromPrice, toPrice } = this.props;
+            numberOfPages, totalCount, currentPage, fromDate, toDate, fromPrice, toPrice } = this.props;
         const filters: IFilters = { roomTypeFilter, propertyTypeFilter, neighborhoodFilter }
         const rows = (listings || []).map(v => {
             const row: IListingTableDto = {
@@ -146,12 +150,39 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
     }
 
     applyFilters = () => {
-        this.props.fetchTableData();
+        const { toDate, fromDate, fromPrice, toPrice } = this.props;
+        let invalidFilter = false
+
+        if ((toDate && !fromDate) || (!toDate && fromDate)) {
+            this.props.enqueueSnackbar('Missing Date!', { variant: 'error', autoHideDuration: 4000 });
+            invalidFilter = true;
+        }
+
+        if (toDate && fromDate && toDate < fromDate) {
+            this.props.enqueueSnackbar('Crossing Dates!', { variant: 'error', autoHideDuration: 4000 });
+            invalidFilter = true;
+        }
+
+        if ((fromPrice && fromPrice < 0) || (toPrice && toPrice < 0)) {
+            this.props.enqueueSnackbar('Negative Price!', { variant: 'error', autoHideDuration: 4000 });
+            invalidFilter = true;
+        }
+
+        if (fromPrice && toPrice && toPrice < fromPrice) {
+            this.props.enqueueSnackbar('Crossing Prices!', { variant: 'error', autoHideDuration: 4000 });
+            invalidFilter = true;
+        }
+
+        if (!invalidFilter) {
+            this.props.fetchTableData();
+            this.props.enqueueSnackbar('Filters Applied!', { variant: 'success', autoHideDuration: 4000 });
+        }
     }
 
     clearFilters = () => {
         this.props.clearFilters();
         this.props.fetchTableData();
+        this.props.enqueueSnackbar('Filters Cleared.', { variant: 'info', autoHideDuration: 4000 });
     }
 
     sortHandler = (orderBy: string, order: 'asc' | 'desc') => {
@@ -175,6 +206,7 @@ class ListingsScene extends React.Component<IListingsSceneProps> {
     onToPriceChange = (value: number) => {
         this.props.setToPrice(value);
     }
+
 };
 
 const mapStateToProps = (state: IApplicationState) => {
@@ -213,7 +245,8 @@ const mapDispatchToProps = (dispatch: any) => ({
     fetchTableData: (): Promise<{ total_count: number, listings: IListing[] }> => dispatch(fetchTableData()),
 });
 
-const sceneWithStyles = withStyles(styles)(ListingsScene);
+const withSnackBar = withSnackbar(ListingsScene);
+const sceneWithStyles = withStyles(styles)(withSnackBar);
 
 export default connect<IListingsSceneStateProps, IListingsSceneActionProps>(mapStateToProps, mapDispatchToProps)(sceneWithStyles);
 

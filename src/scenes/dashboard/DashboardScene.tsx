@@ -3,18 +3,19 @@ import * as React from 'react';
 import { StaticMap, ViewState, FlyToInterpolator, TransitionInterpolator } from 'react-map-gl';
 import { connect } from 'react-redux';
 import { IListingLocation } from 'src/models/listings/ListingLocation';
-import { INeighborhoodDetailed, IReportsData, INeighborhoodReport, ITypeReport, INeighborhood } from 'src/models/neighborhoods/neighborhood';
-import { fetchLocations } from 'src/redux/actions/listingsActions';
-import { fetchNeighborhoodsDetailed, fetchNeighborhoodReports, fetchAllReports } from 'src/redux/actions/neighborhoodsActions';
+import { INeighborhoodDetailed, INeighborhoodReport, INeighborhood } from 'src/models/neighborhoods/neighborhood';
+import { fetchLocations, fetchListingDetailed } from 'src/redux/actions/listingsActions';
+import { fetchNeighborhoodsDetailed, fetchAllReports } from 'src/redux/actions/neighborhoodsActions';
 import { IApplicationState } from 'src/redux/store';
 import './DashboardScene.css';
 import mapMarker from './utils/map_marker.png';
 import * as _ from 'lodash';
-import NeighTooltip, { NeighTooltipProps } from './components/NeighTooltip';
-import Pannel from 'src/components/Panel';
-import { deepClone } from 'src/redux/reducers/listingsGridReducer';
+import NeighTooltip, { INeighTooltipProps } from './components/NeighTooltip';
 import NgReportsPanel from './components/NgReportsPanel';
 import Layout from 'src/Layout';
+import { IListingDetailed } from 'src/models/listings/Listing';
+import ListingInfoPanel from './components/ListingInfoPanel';
+import { PlaceRounded } from '@material-ui/icons';
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
@@ -27,6 +28,7 @@ interface IViewState extends ViewState {
 }
 
 interface DashBoardSceneStateProps {
+    selectedListing: IListingDetailed | null
     locations: _.Dictionary<IListingLocation[]> | null;
     neighborhoods: _.Dictionary<INeighborhoodDetailed> | null;
     allReports: _.Dictionary<INeighborhoodReport> | null;
@@ -36,15 +38,24 @@ interface DashBardSceneActionsProps {
     fetchNeighborhoodsDetailed: () => Promise<INeighborhoodDetailed[]>;
     fetchLocations: () => Promise<IListingLocation[]>;
     fetchAllReports: () => Promise<INeighborhoodReport[]>;
+    fetchListingDetailed: (id: number | null) => Promise<IListingDetailed> | void;
 }
 
 interface DashBoardSceneState {
     viewState: IViewState,
     selectedNgId: number | null,
     hoveredNgId: number | null,
-    tooltipInfo: NeighTooltipProps | null,
-    showAllGeoJsons: boolean
+    tooltipInfo: INeighTooltipProps | null,
+    placeMarkerInfo: IPlaceMarkerProps | null,
+    showAllGeoJsons: boolean,
+    cursor: string
 }
+
+interface IPlaceMarkerProps {
+    x: number,
+    y: number
+}
+
 interface DashBoardSceneProps extends DashBoardSceneStateProps, DashBardSceneActionsProps {
 }
 
@@ -67,14 +78,10 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             selectedNgId: null,
             hoveredNgId: null,
             tooltipInfo: null,
+            placeMarkerInfo: null,
             showAllGeoJsons: true,
+            cursor: 'grab',
         }
-
-        this.onViewStateChange = this.onViewStateChange.bind(this);
-        this.setNeighborhood = this.setNeighborhood.bind(this);
-        this.hoverHandler = this.hoverHandler.bind(this);
-        this.clickHandler = this.clickHandler.bind(this);
-        this.closePannelHandler = this.closePannelHandler.bind(this);
     }
 
     componentDidMount() {
@@ -83,7 +90,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
         !this.props.allReports && this.props.fetchAllReports();
     }
 
-    getLayers(): any[] {
+    getLayers = () => {
         const { hoveredNgId, selectedNgId } = this.state;
         const { locations, neighborhoods } = this.props;
 
@@ -101,6 +108,8 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     "mask": true
                 }
             },
+            onClick: this.listingClickHandler,
+            onHover: this.listingHoverHandler,
             sizeScale: 4,
             getPosition: (d: IListingLocation) => [d.lon, d.lat],
             getIcon: () => 'marker',
@@ -119,8 +128,8 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             lineJointRounded: true,
             getLineColor: [255, 255, 255, 255],
             getLineWidth: 40,
-            onHover: this.hoverHandler,
-            onClick: this.clickHandler,
+            onHover: this.ngHoverHandler,
+            onClick: this.ngClickHandler,
             visible: this.state.showAllGeoJsons
         });
 
@@ -142,14 +151,14 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             filled: true,
             getFillColor: [0, 0, 0, 0],
             extruded: false,
-            getLineColor: [255, 0, 170],
+            getLineColor: [7, 0, 255],
             getLineWidth: 30,
         });
 
         return [iconLayer, selectedNgLayer, geoJsonAllLayer, hoveredNgLayer];
     }
 
-    hoverHandler(feature: any) {
+    ngHoverHandler = (feature: any) => {
         const { locations } = this.props;
 
         if (feature.object) {
@@ -157,7 +166,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             const ngId = feature.object.properties.id;
             const listCount = locations ? locations[ngId].length : 0;
             const { x, y } = feature;
-            const tooltipProps: NeighTooltipProps = { ngName, listCount, x, y };
+            const tooltipProps: INeighTooltipProps = { ngName, listCount, x, y };
 
             this.setState({ hoveredNgId: feature.object.properties.id, tooltipInfo: tooltipProps });
         } else {
@@ -165,18 +174,33 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
         }
     };
 
-    clickHandler(feature: any) {
+    ngClickHandler = (feature: any) => {
         if (feature.object) {
             const ngId = feature.object.properties.id;
             this.setNeighborhood(ngId);
         }
     };
 
-    onViewStateChange({ viewState }: any) {
+    listingHoverHandler = (pickingInfo: { x: number, y: number, picked: boolean }, event: any) => {
+        if (pickingInfo.picked) {
+            const x = pickingInfo.x - 12;
+            const y = pickingInfo.y - 29;
+            this.setState({ placeMarkerInfo: { x, y }, cursor: 'pointer' });
+        } else {
+            this.setState({ placeMarkerInfo: null, cursor: 'grab' });
+        }
+    };
+
+    listingClickHandler = (pickingInfo: any) => {
+        const id = pickingInfo && pickingInfo.object && pickingInfo.object.id;
+        this.props.fetchListingDetailed(id);
+    }
+
+    onViewStateChange = ({ viewState }: any) => {
         this.setState({ viewState });
     }
 
-    setNeighborhood(neighborhoodId: number) {
+    setNeighborhood = (neighborhoodId: number) => {
         const { neighborhoods } = this.props;
         const ng = neighborhoods && neighborhoods[neighborhoodId];
 
@@ -203,12 +227,16 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
         });
     };
 
-    closePannelHandler() {
+    closeReportsPanelHandler = () => {
         this.setState({
             selectedNgId: null,
             hoveredNgId: null,
             viewState: { ...initialViewState, onTransitionEnd: () => this.setState({ showAllGeoJsons: true }) }
         });
+    };
+
+    closeListingPanelHandler = () => {
+        this.props.fetchListingDetailed(null);
     };
 
     getSelectedNeighborhood = () => {
@@ -228,8 +256,8 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
     }
 
     render() {
-        const { tooltipInfo, selectedNgId } = this.state;
-        const { neighborhoods, locations } = this.props;
+        const { tooltipInfo, placeMarkerInfo, cursor } = this.state;
+        const { neighborhoods, locations, selectedListing } = this.props;
 
         const neigh = this.getSelectedNeighborhood();
         const ngReport = this.getNgReports(neigh);
@@ -242,11 +270,14 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     layers={this.getLayers()}
                     controller={true}
                     onViewStateChange={this.onViewStateChange}
+                    getCursor={() => cursor}
                     useDevicePixels={false}>
                     <StaticMap mapStyle="mapbox://styles/mapbox/dark-v9" width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
                 </DeckGL>}
                 {tooltipInfo && <NeighTooltip {...tooltipInfo} />}
-                {ngReport && <NgReportsPanel listingsCount={listingsCount} ng={ngReport} onClose={this.closePannelHandler} ></NgReportsPanel>}
+                {placeMarkerInfo && <div style={{ position: 'absolute', top: placeMarkerInfo.y, left: placeMarkerInfo.x, zIndex: 99999, color: '#f9a9b4' }}><PlaceRounded color="inherit" /></div>}
+                {selectedListing && <ListingInfoPanel listing={selectedListing} onClose={this.closeListingPanelHandler} />}
+                {ngReport && !selectedListing && <NgReportsPanel listingsCount={listingsCount} ng={ngReport} onClose={this.closeReportsPanelHandler} />}
             </Layout>
         );
     }
@@ -254,9 +285,10 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
 
 const mapStateToProps = (state: IApplicationState) => {
     return {
-        locations: state.locations.list,
+        locations: state.listings.locations,
         neighborhoods: state.neighborhoods.detailedList,
         allReports: state.neighborhoods.allReports,
+        selectedListing: state.listings.item,
     }
 };
 
@@ -264,6 +296,7 @@ const mapDispatchToProps = (dispatch: any) => ({
     fetchLocations: (): Promise<IListingLocation[]> => dispatch(fetchLocations()),
     fetchNeighborhoodsDetailed: (): Promise<INeighborhoodDetailed[]> => dispatch(fetchNeighborhoodsDetailed()),
     fetchAllReports: (): Promise<INeighborhoodReport[]> => dispatch(fetchAllReports()),
+    fetchListingDetailed: (id: number | null) => dispatch(fetchListingDetailed(id)),
 });
 
 export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps>(mapStateToProps, mapDispatchToProps)(DashBoardScene);

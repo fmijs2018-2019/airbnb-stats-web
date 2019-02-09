@@ -29,11 +29,11 @@ export default (props: Props) => {
 
     const reports = (Object as any).values(reportByRange);
 
-    // const renderLegend = () => {
-    //     return <ul style={{margin: 0, listStyle: 'none'}}>
-    //         <li style={{textAlign: 'center'}}>rating</li>
-    //     </ul>
-    // }
+    const renderLegend = () => {
+        return <ul style={{margin: 0, listStyle: 'none'}}>
+            <li style={{textAlign: 'center'}}>Rating</li>
+        </ul>
+    }
 
     return (
         <BarChart margin={margin} width={width} height={height} data={reports}>
@@ -41,7 +41,7 @@ export default (props: Props) => {
             <XAxis dataKey="range" />
             <YAxis />
             <Tooltip />
-            {/* <Legend content={renderLegend} margin={{left: 20, right: 0}} align="center" /> */}
+            <Legend content={renderLegend} margin={{left: 20, right: 0}} align="center" verticalAlign="top" />
             <Bar dataKey='count' barSize={barSize} fill='#413ea0' />
         </BarChart>
     );

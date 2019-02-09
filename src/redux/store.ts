@@ -1,4 +1,4 @@
-import { ILocationsState, initialLocationsState } from './state/locationsState';
+import { IListingsState, initialListingsState } from './state/listingsState';
 import { createStore, applyMiddleware, compose } from 'redux';
 import rootReducer from './rootReducer';
 import thunk from 'redux-thunk'
@@ -9,7 +9,7 @@ import { IListingsGridState, initialListingsGridState } from './state/listingsGr
 import { IAuthState, initialAuthState } from './state/authState';
 
 export interface IApplicationState {
-    locations: ILocationsState,
+    listings: IListingsState,
     neighborhoods: INeighborhoodsState,
     common: ICommonState,
     listingsGrid: IListingsGridState,
@@ -17,7 +17,7 @@ export interface IApplicationState {
 }
 
 export const initialAppState: IApplicationState = {
-    locations: initialLocationsState,
+    listings: initialListingsState,
     neighborhoods: initialNeighborhoodsState,
     common: initialCommonState,
     listingsGrid: initialListingsGridState,

@@ -6,13 +6,16 @@ import registerServiceWorker from './registerServiceWorker';
 import { BrowserRouter } from 'react-router-dom';
 import { Provider } from 'react-redux';
 import store from './redux/store';
+import { SnackbarProvider } from 'notistack';
 
 ReactDOM.render(
-    <Provider store={store}>
-      <BrowserRouter>
-        <App />
-      </BrowserRouter>
-    </Provider>,
-  document.getElementById('root') as HTMLElement
+	<Provider store={store}>
+		<BrowserRouter>
+			<SnackbarProvider maxSnack={3}>
+				<App />
+			</SnackbarProvider>
+		</BrowserRouter>
+	</Provider>,
+	document.getElementById('root') as HTMLElement
 );
 registerServiceWorker();

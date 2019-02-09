@@ -69,7 +69,8 @@ export const listingsGridReducer = (state: IListingsGridState = initialListingsG
                     fromDate: undefined,
                     toDate: undefined,
                     fromPrice: undefined,
-                    toPrice: undefined };
+                    toPrice: undefined,
+                    orderBy: '' };
         case FETCH_TABLE_DATA_SUCCESS:
             const { total_count, listings } = action.payload;
             let numberOfPages = Math.ceil(total_count / state.pageSize);
