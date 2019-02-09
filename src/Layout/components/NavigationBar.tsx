@@ -135,7 +135,7 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
             <React.Fragment>
                 <Button className={className} color="inherit" component={(props: any) => <Link to="/dashboard" {...props}>Dashboard</Link>}>Dashboard</Button>
                 <Button className={className} color="inherit" component={(props: any) => <Link to="/listings" {...props}>Listings</Link>}>Listings</Button>
-                <Button className={className} color="inherit" component={(props: any) => <Link to="/reports" {...props}>Reports</Link>}>Reports</Button>
+                {/* <Button className={className} color="inherit" component={(props: any) => <Link to="/reports" {...props}>Reports</Link>}>Reports</Button> */}
             </React.Fragment>
         );
     }
