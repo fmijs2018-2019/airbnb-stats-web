@@ -32,8 +32,8 @@ class ListingInfoPanel extends React.Component<ListingInfoPanelProps> {
                     <RatingItem label="Communcation" rating={reviewScoresCommunication}/>
                     <RatingItem label="Location" rating={reviewScoresLocation}/>
                     <RatingItem label="Value" rating={reviewScoresValue}/>
-                    <RatingItem label="Overal Rating" rating={reviewScoresRating}/>                    
-                    <div style={{float: 'right', margin: '10px'}}>Reviews per month: {listing.reviewsPerMonth || 0}</div>
+                    <RatingItem label="Overall Rating" rating={reviewScoresRating}/>                    
+                    <div style={{float: 'right', margin: '10px'}}>Reviews per month: {reviewsPerMonth || 0}</div>
                 </div>
             </Panel>
         );
