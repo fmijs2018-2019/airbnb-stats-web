@@ -1,6 +1,6 @@
 import { INeighborhoodsState, initialNeighborhoodsState } from '../state/neighborhoodsState';
-import { IReduxAction } from 'src/models/ReduxAction';
 import { FETCH_NEIGHBORHOODS_DETAILED_SUCCESS, FETCH_NEIGHBORHOODS_ERROR, FETCH_NG_REPORTS_ERROR, FETCH_NG_REPORTS_SUCCESS, FETCH_ALL_REPORTS_SUCCESS, FETCH_ALL_REPORTS_ERROR } from '../actions/neighborhoodsActions';
+import { IReduxAction } from '../../models/ReduxAction';
 
 export const neighborhoodsReducer = (state: INeighborhoodsState = initialNeighborhoodsState, action: IReduxAction): INeighborhoodsState => {
     switch (action.type) {

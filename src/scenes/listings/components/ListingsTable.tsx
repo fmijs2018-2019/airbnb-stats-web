@@ -1,13 +1,13 @@
 import { createStyles, Theme, WithStyles, withStyles, Typography } from '@material-ui/core';
 import * as React from 'react';
 import { Index } from 'react-virtualized';
-import VirtualizedTable, { IVirtualizedColumn } from 'src/components/VirtualizedTable';
-import { IListingTableDto } from 'src/models/listings/ListingTableDto';
-import ListingAccommodatesColumn from './ListingAccommodatesColumn';
 import ListingNeighborhoodColumn from './ListingNeighborhoodColumn';
 import ListingRatingColumn from './ListingRatingColumn';
 import ListingTypeColumn from './ListingTypeColumn';
-import TablePaging from 'src/components/TablePaging';
+import TablePaging from '../../../components/TablePaging';
+import VirtualizedTable, { IVirtualizedColumn } from '../../../components/VirtualizedTable';
+import ListingAccommodatesColumn from './ListingAccommodatesColumn';
+import { IListingTableDto } from '../../../models/listings/ListingTableDto';
 
 const styles = (theme: Theme) => createStyles({
     paging: {

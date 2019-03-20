@@ -2,9 +2,9 @@ import { Auth0DecodedHash } from 'auth0-js';
 import * as React from 'react';
 import { connect } from 'react-redux';
 import { RouteComponentProps, withRouter } from 'react-router-dom';
-import { handleAuthentication } from 'src/redux/actions/authActions';
-import { IApplicationState } from 'src/redux/store';
 import { LoadingScreen } from './SecuredRoute';
+import { IApplicationState } from '../redux/store';
+import { handleAuthentication } from '../redux/actions/authActions';
 
 interface ICallbackProps extends RouteComponentProps {
     handleAuthentication: () => Promise<Auth0DecodedHash>

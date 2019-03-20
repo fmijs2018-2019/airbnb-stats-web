@@ -1,10 +1,10 @@
 import * as React from 'react';
 import NavigationBar from './components/NavigationBar';
 import { connect } from 'react-redux';
-import { IApplicationState } from 'src/redux/store';
-import { IProfilePayload } from 'src/models/auth/IProfilePayload';
-import { clearAuthState, isAuthenticated } from 'src/redux/actions/authActions';
-import auth0Client from 'src/Auth';
+import { IProfilePayload } from '../models/auth/IProfilePayload';
+import auth0Client from '../Auth';
+import { IApplicationState } from '../redux/store';
+import { isAuthenticated, clearAuthState } from '../redux/actions/authActions';
 
 interface ILayoutProps {
     isAuth: boolean;

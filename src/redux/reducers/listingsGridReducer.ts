@@ -1,10 +1,10 @@
 import { IListingsGridState, initialListingsGridState } from '../state/listingsGridState';
-import { IReduxAction } from 'src/models/ReduxAction';
 import { FETCH_FILTERS_DATA_ERROR, FETCH_FILTERS_DATA_SUCCESS,
          SET_NEIGHBORHOODS_FILTER, SET_PROPERTY_TYPES_FILTER,
          SET_ROOM_TYPES_FILTER, FETCH_TABLE_DATA_SUCCESS,
          FETCH_TABLE_DATA_ERROR, SET_PAGE, SET_PAGE_SIZE, 
          CLEAR_FILTERS, SET_ORDER, SET_ORDERBY, SET_FROM_DATE, SET_TO_DATE, SET_FROM_PRICE, SET_TO_PRICE } from '../actions/listingsGridActions';
+import { IReduxAction } from '../../models/ReduxAction';
 
 export const deepClone = (obj: object) => {
     return JSON.parse(JSON.stringify(obj));

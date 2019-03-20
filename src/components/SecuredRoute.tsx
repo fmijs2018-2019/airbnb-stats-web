@@ -1,11 +1,11 @@
 import * as React from 'react';
 import { Route, RouteProps, Link } from 'react-router-dom';
-import { isAuthenticated } from 'src/redux/actions/authActions';
-import { IApplicationState } from 'src/redux/store';
-import auth0Client from 'src/Auth';
 import { connect } from 'react-redux';
 import { CircularProgress, Button } from '@material-ui/core';
 import amsterdamImg from './utils/amsterdam.jpg';
+import { IApplicationState } from '../redux/store';
+import { isAuthenticated } from '../redux/actions/authActions';
+import auth0Client from '../Auth';
 
 interface SecureRouteProps extends RouteProps {
 	silentAuthInProgress: boolean;

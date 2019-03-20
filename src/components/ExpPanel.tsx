@@ -1,7 +1,7 @@
 import { createStyles, ExpansionPanel, ExpansionPanelDetails, ExpansionPanelSummary, withStyles, WithStyles } from '@material-ui/core';
 import ExpandMoreIcon from '@material-ui/icons/ExpandMore';
 import * as React from 'react';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 
 const styles = createStyles({
     root: {

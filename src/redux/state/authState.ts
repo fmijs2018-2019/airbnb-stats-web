@@ -1,4 +1,4 @@
-import { IProfilePayload } from 'src/models/auth/IProfilePayload';
+import { IProfilePayload } from "../../models/auth/IProfilePayload";
 
 
 export interface IAuthState {

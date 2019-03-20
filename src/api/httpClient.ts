@@ -1,7 +1,6 @@
 import axios, { AxiosRequestConfig } from 'axios';
-import auth0Client from 'src/Auth';
 import store from '../redux/store';
-import { isAuthenticated } from 'src/redux/actions/authActions';
+import { isAuthenticated } from '../redux/actions/authActions';
 
 class HttpClient {
     

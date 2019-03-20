@@ -1,11 +1,10 @@
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
-import { Legend, Pie, PieChart, Tooltip, BarChart, CartesianGrid, XAxis, YAxis, Bar } from 'recharts';
-import Panel from 'src/components/Panel';
-import Stepper from 'src/components/Stepper';
-import { INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
 import NgListingsByTypePieChart from './NgListingsByTypePieChart';
 import NgListingsRatingBarChart from './NgListingsRatingBarChart';
+import { INeighborhoodReport } from '../../../models/neighborhoods/neighborhood';
+import Panel from '../../../components/Panel';
+import Stepper from '../../../components/Stepper';
 
 interface NgReportProps extends WithStyles<typeof styles> {
     ng: INeighborhoodReport;

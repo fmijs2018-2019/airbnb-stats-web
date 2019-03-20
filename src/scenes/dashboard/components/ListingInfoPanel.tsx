@@ -1,8 +1,8 @@
 import { createStyles, Theme, withStyles, WithStyles } from '@material-ui/core';
 import * as React from 'react';
-import Panel from 'src/components/Panel';
-import { IListingDetailed } from 'src/models/listings/Listing';
 import RatingItem from './RatingItem';
+import Panel from '../../../components/Panel';
+import { IListingDetailed } from '../../../models/listings/Listing';
 
 interface ListingInfoPanelProps extends WithStyles<typeof styles> {
     listing: IListingDetailed;

@@ -1,6 +1,6 @@
-import { IFilters } from 'src/models/grid/filtersData';
-import { IError } from 'src/models/Error';
-import { IListing } from 'src/models/listings/Listing';
+import { IListing } from "../../models/listings/Listing";
+import { IError } from "../../models/Error";
+import { IFilters } from "../../models/grid/filtersData";
 
 export interface IListingsGridState extends IFilters {
     fetchFiltersDataError: IError | null,

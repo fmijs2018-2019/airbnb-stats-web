@@ -1,8 +1,8 @@
 import * as React from 'react';
-import { IListingType } from 'src/models/listings/ListingTableDto';
 import Shared from '@material-ui/icons/SupervisedUserCircleRounded'
 import PrivateRoom from '@material-ui/icons/LockOpen'
 import House from '@material-ui/icons/HomeOutlined'
+import { IListingType } from '../../../models/listings/ListingTableDto';
 
 interface IListingTypeColumn {
     type: IListingType;

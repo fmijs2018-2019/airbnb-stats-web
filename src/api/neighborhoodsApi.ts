@@ -1,5 +1,5 @@
-import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
 import httpClient from './httpClient';
+import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from '../models/neighborhoods/neighborhood';
 
 class neighborhoodsApi {
     getNeighborhoodsDetailed() {

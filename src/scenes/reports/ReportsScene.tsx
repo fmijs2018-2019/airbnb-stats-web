@@ -1,5 +1,5 @@
 import * as React from 'react';
-import Layout from 'src/Layout';
+import Layout from '../../Layout';
 
 export default class ReportsScene extends React.Component {
     render() {

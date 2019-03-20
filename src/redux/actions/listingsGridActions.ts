@@ -1,10 +1,10 @@
-import { IFilters, IFiltersDataCollections } from 'src/models/grid/filtersData';
 import { Dispatch } from 'redux';
 import listingsApiClient from '../../api/listingsApi';
-import { IReduxAction } from 'src/models/ReduxAction';
-import { IError } from 'src/models/Error';
 import { IApplicationState } from '../store';
-import { IListing } from 'src/models/listings/Listing';
+import { IListing } from '../../models/listings/Listing';
+import { IError } from '../../models/Error';
+import { IReduxAction } from '../../models/ReduxAction';
+import { IFiltersDataCollections, IFilters } from '../../models/grid/filtersData';
 
 export const FETCH_TABLE_DATA_SUCCESS = 'FETCH_TABLE_DATA_SUCCESS';
 export const FETCH_TABLE_DATA_ERROR = 'FETCH_TABLE_DATA_ERROR';

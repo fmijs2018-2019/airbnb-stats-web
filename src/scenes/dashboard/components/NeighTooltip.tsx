@@ -28,7 +28,7 @@ export interface INeighTooltipProps {
 const NeighTooltip: React.SFC<INeighTooltipProps & WithStyles<typeof styles>> = (props) => {
     const { ngName, listCount, x, y, classes: { tooltip, icon } } = props;
 
-    let pos = {};
+    let pos: any = {};
     let xPos = 'left';
     let xVal = x;
     let yPos = 'top';

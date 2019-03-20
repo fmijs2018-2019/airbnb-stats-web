@@ -1,8 +1,8 @@
-import { IListingLocation } from 'src/models/listings/ListingLocation';
-import { IFiltersDataCollections } from 'src/models/grid/filtersData';
 import httpClient from './httpClient';
-import { IListing, IListingDetailed } from 'src/models/listings/Listing';
 import { AxiosRequestConfig } from 'axios';
+import { IFiltersDataCollections } from '../models/grid/filtersData';
+import { IListingLocation } from '../models/listings/ListingLocation';
+import { IListing, IListingDetailed } from '../models/listings/Listing';
 
 class ListingsApi {
     getLocations() {

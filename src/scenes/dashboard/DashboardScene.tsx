@@ -1,21 +1,21 @@
 import DeckGL, { IconLayer, GeoJsonLayer } from 'deck.gl';
-import * as React from 'react';
 import { StaticMap, ViewState, FlyToInterpolator, TransitionInterpolator } from 'react-map-gl';
 import { connect } from 'react-redux';
-import { IListingLocation } from 'src/models/listings/ListingLocation';
-import { INeighborhoodDetailed, INeighborhoodReport, INeighborhood } from 'src/models/neighborhoods/neighborhood';
-import { fetchLocations, fetchListingDetailed } from 'src/redux/actions/listingsActions';
-import { fetchNeighborhoodsDetailed, fetchAllReports } from 'src/redux/actions/neighborhoodsActions';
-import { IApplicationState } from 'src/redux/store';
 import './DashboardScene.css';
 import mapMarker from './utils/map_marker.png';
-import * as _ from 'lodash';
+import _ from 'lodash';
 import NeighTooltip, { INeighTooltipProps } from './components/NeighTooltip';
 import NgReportsPanel from './components/NgReportsPanel';
-import Layout from 'src/Layout';
-import { IListingDetailed } from 'src/models/listings/Listing';
 import ListingInfoPanel from './components/ListingInfoPanel';
 import { PlaceRounded } from '@material-ui/icons';
+import { IListingDetailed } from '../../models/listings/Listing';
+import { INeighborhoodDetailed, INeighborhoodReport, INeighborhood } from '../../models/neighborhoods/neighborhood';
+import { IListingLocation } from '../../models/listings/ListingLocation';
+import Layout from '../../Layout';
+import { IApplicationState } from '../../redux/store';
+import { fetchLocations, fetchListingDetailed } from '../../redux/actions/listingsActions';
+import { fetchNeighborhoodsDetailed, fetchAllReports } from '../../redux/actions/neighborhoodsActions';
+import React from 'react';
 
 // Set your mapbox access token here
 const MAPBOX_ACCESS_TOKEN = 'pk.eyJ1IjoiZGFuaWVsYXBvc3QiLCJhIjoiY2puZGlpZWNnMDJlbTNxbjdxMGxzMTQ0diJ9.kyabw1ItkRkzxK-UqTqi9g';
@@ -265,7 +265,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
 
         return (
             <Layout>
-                {neighborhoods && locations && <DeckGL
+                <DeckGL
                     viewState={this.state.viewState}
                     layers={this.getLayers()}
                     controller={true}
@@ -273,7 +273,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     getCursor={() => cursor}
                     useDevicePixels={false}>
                     <StaticMap mapStyle="mapbox://styles/mapbox/dark-v9" width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
-                </DeckGL>}
+                </DeckGL>
                 {tooltipInfo && <NeighTooltip {...tooltipInfo} />}
                 {placeMarkerInfo && <div style={{ position: 'absolute', top: placeMarkerInfo.y, left: placeMarkerInfo.x, zIndex: 99999, color: '#f9a9b4' }}><PlaceRounded color="inherit" /></div>}
                 {selectedListing && <ListingInfoPanel listing={selectedListing} onClose={this.closeListingPanelHandler} />}
@@ -289,7 +289,7 @@ const mapStateToProps = (state: IApplicationState) => {
         neighborhoods: state.neighborhoods.detailedList,
         allReports: state.neighborhoods.allReports,
         selectedListing: state.listings.item,
-    }
+	};
 };
 
 const mapDispatchToProps = (dispatch: any) => ({
@@ -299,4 +299,4 @@ const mapDispatchToProps = (dispatch: any) => ({
     fetchListingDetailed: (id: number | null) => dispatch(fetchListingDetailed(id)),
 });
 
-export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps>(mapStateToProps, mapDispatchToProps)(DashBoardScene);
+export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps>(mapStateToProps as any, mapDispatchToProps)(DashBoardScene);

@@ -1,5 +1,5 @@
-import { IReportsData, INeighborhoodDetailed, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
-import { IError } from 'src/models/Error';
+import { IError } from "../../models/Error";
+import { INeighborhoodReport, INeighborhoodDetailed, IReportsData } from "../../models/neighborhoods/neighborhood";
 
 export interface INeighborhoodsState {
     detailedList: _.Dictionary<INeighborhoodDetailed> | null,

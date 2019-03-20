@@ -1,6 +1,6 @@
-import { IListingLocation } from "src/models/listings/ListingLocation";
-import { IError } from 'src/models/Error';
-import { IListingDetailed } from 'src/models/listings/Listing';
+import { IListingDetailed } from "../../models/listings/Listing";
+import { IListingLocation } from "../../models/listings/ListingLocation";
+import { IError } from "../../models/Error";
 
 export interface IListingsState {
     locations: _.Dictionary<IListingLocation[]> | null;

@@ -1,15 +1,15 @@
 import { createStyles, WithStyles, withStyles, Typography } from '@material-ui/core';
 import * as React from 'react';
 import ListingsTable from './components/ListingsTable'
-import { IListingTableDto } from 'src/models/listings/ListingTableDto';
-import ListingsFilters from './components/ListingsFilters';
-import { IFilters } from 'src/models/grid/filtersData';
-import { IApplicationState } from 'src/redux/store';
-import { fetchFiltersData, setNeighborhoodsFilter, setPropertyTypesFilter, setRoomTypesFilter, fetchTableData, setPage, setPageSize, setOrder, setOrderBy, clearFilters, setFromDate, setToDate, setFromPrice, setToPrice } from 'src/redux/actions/listingsGridActions';
 import { connect } from 'react-redux';
-import { IListing } from 'src/models/listings/Listing';
-import Layout from 'src/Layout';
 import { withSnackbar, InjectedNotistackProps } from 'notistack';
+import { IFilters } from '../../models/grid/filtersData';
+import { IListing } from '../../models/listings/Listing';
+import { IListingTableDto } from '../../models/listings/ListingTableDto';
+import Layout from '../../Layout';
+import ListingsFilters from './components/ListingsFilters';
+import { IApplicationState } from '../../redux/store';
+import { fetchFiltersData, setNeighborhoodsFilter, setPropertyTypesFilter, setRoomTypesFilter, setPage, setPageSize, setOrder, setOrderBy, setFromDate, setToDate, setFromPrice, setToPrice, clearFilters, fetchTableData } from '../../redux/actions/listingsGridActions';
 
 const styles = createStyles({
     listingsFilters: {
@@ -248,5 +248,5 @@ const mapDispatchToProps = (dispatch: any) => ({
 const withSnackBar = withSnackbar(ListingsScene);
 const sceneWithStyles = withStyles(styles)(withSnackBar);
 
-export default connect<IListingsSceneStateProps, IListingsSceneActionProps>(mapStateToProps, mapDispatchToProps)(sceneWithStyles);
+export default connect<IListingsSceneStateProps, IListingsSceneActionProps>(mapStateToProps as any, mapDispatchToProps)(sceneWithStyles);
 

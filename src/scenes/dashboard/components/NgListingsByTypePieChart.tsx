@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { PieChart, Pie, Legend, Tooltip, Cell } from 'recharts';
-import { ITypeReport } from 'src/models/neighborhoods/neighborhood';
+import { ITypeReport } from '../../../models/neighborhoods/neighborhood';
 
 const colors = ['#00c49f', '#ffbb28', '#ff8042', '#f71348', '#413ea0'];
 

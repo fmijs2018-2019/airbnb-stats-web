@@ -1,10 +1,9 @@
 import { Dispatch } from 'redux';
 import neighborhoodsApiClient from '../../api/neighborhoodsApi';
-import { IError } from 'src/models/Error';
-import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from 'src/models/neighborhoods/neighborhood';
-import { IReduxAction } from 'src/models/ReduxAction';
-import { IApplicationState } from '../store';
 import * as _ from 'lodash';
+import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from '../../models/neighborhoods/neighborhood';
+import { IError } from '../../models/Error';
+import { IReduxAction } from '../../models/ReduxAction';
 
 export const FETCH_NEIGHBORHOODS_DETAILED_SUCCESS = 'FETCH_NEIGHBORHOODS_DETAILED_SUCCESS';
 export const FETCH_NEIGHBORHOODS_ERROR = 'FETCH_NEIGHBORHOODS_ERROR';

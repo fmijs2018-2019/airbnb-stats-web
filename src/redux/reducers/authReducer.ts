@@ -1,7 +1,7 @@
 
-import { IReduxAction } from 'src/models/ReduxAction';
 import { IAuthState, initialAuthState } from '../state/authState';
 import { AUTH_SUCCESS, AUTH_ERROR, SIGN_OUT_SUCCESS, SILENT_AUTH_END, SILENT_AUTH_START, SILENT_AUTH_ERROR, SILENT_AUTH_SUCCESS, isAuthenticated } from '../actions/authActions';
+import { IReduxAction } from '../../models/ReduxAction';
 
 export const authReducer = (state: IAuthState = initialAuthState, action: IReduxAction): IAuthState => {
     switch (action.type) {

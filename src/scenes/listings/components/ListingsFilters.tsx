@@ -1,11 +1,9 @@
-import { createStyles, Theme, WithStyles, withStyles, Typography, FormControlLabel, Checkbox, Button, Badge } from '@material-ui/core';
-import * as React from 'react';
-import '../../../index.css';
-import ExpPanel from '../../../components/ExpPanel';
-import { IFilters, INeighborhoodFilter } from 'src/models/grid/filtersData';
-import * as _ from 'lodash';
-import FromToDatePicker from 'src/components/FromToDatePicker';
-import NumberRange from 'src/components/NumberRange';
+import { Theme, createStyles, WithStyles, FormControlLabel, Button, withStyles, Typography, Badge, Checkbox } from "@material-ui/core";
+import { IFilters } from "../../../models/grid/filtersData";
+import React from "react";
+import ExpPanel from "../../../components/ExpPanel";
+import FromToDatePicker from "../../../components/FromToDatePicker";
+import NumberRange from "../../../components/NumberRange";
 
 const styles = (theme: Theme) => createStyles({
     sidebar: {

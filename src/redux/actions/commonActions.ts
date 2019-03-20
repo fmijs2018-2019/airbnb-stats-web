@@ -1,4 +1,4 @@
-import { IReduxAction } from 'src/models/ReduxAction';
+import { IReduxAction } from "../../models/ReduxAction";
 
 export const IS_FETCHING = 'IS_FETCHING';
 

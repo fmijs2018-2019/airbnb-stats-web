@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { Index, RowMouseEventHandlerParams, TableCellRenderer, TableHeaderRenderer, Table, AutoSizer, Column, TableCellProps, TableHeaderProps } from 'react-virtualized';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import ExpandMore from '@material-ui/icons/ExpandMore';
 import UnfoldMore from '@material-ui/icons/UnfoldMore';
 import { WithStyles, Theme, createStyles, TableCell, withStyles, Tooltip, TableSortLabel } from '@material-ui/core';

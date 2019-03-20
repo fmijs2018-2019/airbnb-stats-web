@@ -1,11 +1,11 @@
 import { Dispatch } from 'redux';
-import { IError } from 'src/models/Error';
-import { IListingLocation } from 'src/models/listings/ListingLocation';
 import { IReduxAction } from '../../models/ReduxAction';
 import { isFetching } from './commonActions';
 import listingsApiClient from '../../api/listingsApi';
 import * as _ from 'lodash';
-import { IListingDetailed } from 'src/models/listings/Listing';
+import { IListingLocation } from '../../models/listings/ListingLocation';
+import { IError } from '../../models/Error';
+import { IListingDetailed } from '../../models/listings/Listing';
 
 export const FETCH_LOCATIONS_SUCCESS = 'FETCH_LOCATIONS_SUCCESS';
 export const FETCH_LOCATIONS_ERROR = 'FETCH_LOCATIONS_ERROR';

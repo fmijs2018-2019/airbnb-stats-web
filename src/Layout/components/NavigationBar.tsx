@@ -10,9 +10,9 @@ import Button from '@material-ui/core/Button';
 import Drawer from '@material-ui/core/Drawer';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { Link } from 'react-router-dom';
-import GithubIcon from 'src/components/icnos/GithubIcon';
-import { IProfilePayload } from 'src/models/auth/IProfilePayload';
 import { AccountCircle } from '@material-ui/icons';
+import GithubIcon from '../../components/icnos/GithubIcon';
+import { IProfilePayload } from '../../models/auth/IProfilePayload';
 
 const styles = (theme: Theme) => createStyles({
     navBar: {

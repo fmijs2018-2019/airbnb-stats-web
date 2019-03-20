@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { BarChart, CartesianGrid, YAxis, Tooltip, Legend, Bar, XAxis, Margin } from 'recharts';
-import { IRatingReport } from 'src/models/neighborhoods/neighborhood';
+import { IRatingReport } from '../../../models/neighborhoods/neighborhood';
 
 interface Props {
     byRating: IRatingReport[];
@@ -13,7 +13,7 @@ interface Props {
 export default (props: Props) => {
     const { byRating, width, height, barSize, margin } = props;
 
-    let reportByRange = { };
+    let reportByRange: any = { };
         for (let i = -1; i < 10; i++) {
             reportByRange[i.toString()] = {
                 range: i >= 0 ? `${i * 10 + 1}-${(i + 1) * 10}` : 'NO', // range string or NO for listings without reports

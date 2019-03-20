@@ -1,8 +1,8 @@
 import { IApplicationState } from "../store";
-import auth0Client from 'src/Auth';
 import { Dispatch } from 'redux';
 import { AuthorizeOptions, Auth0DecodedHash } from 'auth0-js';
-import { IReduxAction } from 'src/models/ReduxAction';
+import auth0Client from "../../Auth";
+import { IReduxAction } from "../../models/ReduxAction";
 
 //selectors
 export const isAuthenticated = (state: IApplicationState): boolean => {
@@ -71,7 +71,7 @@ export const authError = (error: any): IReduxAction => ({
 
 export const authSuccess = (data: Auth0DecodedHash) => ({
     type: AUTH_SUCCESS,
-    payload: data,
+	payload: data,
 });
 
 export const silentAuthError = (error: any): IReduxAction => ({

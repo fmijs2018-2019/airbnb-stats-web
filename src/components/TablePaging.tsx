@@ -1,6 +1,6 @@
 import { Theme, createStyles, WithStyles, withStyles, TablePagination } from '@material-ui/core';
 import * as React from 'react';
-import * as classNames from 'classnames';
+import classNames from 'classnames';
 import TablePagingActions from './TablePagingActions';
 
 const styles = (theme: Theme) => createStyles({
@@ -43,7 +43,7 @@ class TablePaging extends React.Component<ITablePagingProps> {
                 page={page}
                 onChangePage={this.handleChangePage}
                 onChangeRowsPerPage={this.handleChangeRowsPerPage}
-                ActionsComponent={TablePagingActions}
+                ActionsComponent={TablePagingActions as any}
             />
         );
     }
