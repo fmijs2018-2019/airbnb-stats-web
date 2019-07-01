@@ -7,6 +7,7 @@ import store from './redux/store';
 import DashBoardScene from './scenes/dashboard/DashboardScene';
 import ListingsScene from './scenes/listings/ListingsScene';
 import ReportsScene from './scenes/reports/ReportsScene';
+import AboutScene from './scenes/about/AboutScene';
 
 class App extends React.Component<{}> {
 
@@ -35,6 +36,7 @@ class App extends React.Component<{}> {
                 <Route exact path="/dashboard" component={DashBoardScene} />
                 <SecureRoute path='/listings' component={ListingsScene} />
                 <SecureRoute path='/reports' component={ReportsScene} />
+                {/* <SecureRoute path='/About' component={AboutScene} /> */}
                 <Redirect to="/dashboard" />
             </Switch>
         </React.Fragment>;

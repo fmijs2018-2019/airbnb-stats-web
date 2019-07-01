@@ -47,6 +47,8 @@ const ListingRatingColumn = (props: IListingRatingColumnProps) => {
         icon={<AssessmentIcon />}
         variant="outlined"
     />
+
+	
 }
 
 export default withStyles(styles)(ListingRatingColumn);

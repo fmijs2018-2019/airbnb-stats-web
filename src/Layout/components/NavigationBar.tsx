@@ -19,7 +19,8 @@ const styles = (theme: Theme) => createStyles({
         width: '100%',
         backgroundColor: 'rgba(32, 35, 42, 0.8)',
         position: 'fixed',
-        height: '56px',
+		height: '56px',
+		top: 0,
         zIndex: 1301,
     },
     toolbar: {
@@ -136,6 +137,7 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
                 <Button className={className} color="inherit" component={(props: any) => <Link to="/dashboard" {...props}>Dashboard</Link>}>Dashboard</Button>
                 <Button className={className} color="inherit" component={(props: any) => <Link to="/listings" {...props}>Listings</Link>}>Listings</Button>
                 {/* <Button className={className} color="inherit" component={(props: any) => <Link to="/reports" {...props}>Reports</Link>}>Reports</Button> */}
+                <Button className={className} color="inherit" component={(props: any) => <Link to="/about" {...props}>About</Link>}>About</Button>
             </React.Fragment>
         );
     }
