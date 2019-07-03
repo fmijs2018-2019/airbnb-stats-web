@@ -28,35 +28,32 @@ const data = [
 ];
 
 export interface ITripleLineChartProps {
-	data1: ILineChartData[],
-	data2: ILineChartData[],
-	data3: ILineChartData[],
+	data: any[],
+	dataKey1: string,
+	dataKey2: string,
+	dataKey3: string,
+	label: string,
 }
 
-export interface ILineChartData {
-	name: string;
-	value: number;
-}
-
-export default class SimpleLineChart extends PureComponent<{}> {
+export default class SimpleLineChart extends PureComponent<ITripleLineChartProps> {
 
 	render() {
 		return (
 			<ResponsiveContainer>
 				<LineChart
-					data={data}
+					data={this.props.data}
 					margin={{
 						top: 20, right: 20, bottom: 20, left: 20,
 					}}
 				>
 					<CartesianGrid strokeDasharray="3 3" />
-					<XAxis dataKey="name" />
+					<XAxis dataKey={this.props.label} />
 					<YAxis />
 					<Tooltip />
 					<Legend />
-					<Line type="monotone" dataKey="pv" stroke="#8884d8" activeDot={{ r: 8 }} />
-					<Line type="monotone" dataKey="amt" stroke="#632428" activeDot={{ r: 8 }} />
-					<Line type="monotone" dataKey="uv" stroke="#82ca9d" />
+					<Line type="monotone" dataKey={this.props.dataKey1} stroke="#8884d8" activeDot={{ r: 8 }} />
+					<Line type="monotone" dataKey={this.props.dataKey2} stroke="#632428" activeDot={{ r: 8 }} />
+					<Line type="monotone" dataKey={this.props.dataKey3} stroke="#82ca9d" />
 				</LineChart>
 			</ResponsiveContainer>
 		);

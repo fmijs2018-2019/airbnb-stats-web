@@ -150,6 +150,106 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 		return data;
 	}
 
+	getAllTypesOfRatingRepor() {
+		const { ratingReports } = this.state;
+		if (ratingReports === null) return undefined;
+
+		const data = [
+			{
+				name: "1",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 1).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 1).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 1).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 1).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 1).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 1).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "2",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 2).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 2).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 2).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 2).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 2).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 2).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "3",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 3).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 3).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 3).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 3).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 3).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 3).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "4",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 4).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 4).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 4).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 4).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 4).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 4).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "5",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 5).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 5).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 5).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 5).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 5).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 5).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "6",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 6).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 6).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 6).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 6).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 6).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 6).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "7",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 7).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 7).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 7).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 7).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 7).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 7).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "8",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 8).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 8).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 8).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 8).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 8).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 8).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "9",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 9).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 9).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 9).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 9).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 9).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 9).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: "10",
+				cleanliness: ratingReports.cleanliness.filter(r => r.rating === 10).reduce((r, c) => r + c.count, 0),
+				checkin: ratingReports.checkin.filter(r => r.rating === 10).reduce((r, c) => r + c.count, 0),
+				value: ratingReports.value.filter(r => r.rating === 10).reduce((r, c) => r + c.count, 0),
+				accuracy: ratingReports.cleanliness.filter(r => r.rating === 10).reduce((r, c) => r + c.count, 0),
+				location: ratingReports.cleanliness.filter(r => r.rating === 10).reduce((r, c) => r + c.count, 0),
+				communication: ratingReports.cleanliness.filter(r => r.rating === 10).reduce((r, c) => r + c.count, 0)
+			},
+
+		]
+		return data;
+	}
+
 	render() {
 		const style: any = {
 			boxSizing: 'border-box',
@@ -164,6 +264,8 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 		const ratingRep = this.getTotalRatingData();
 		const priceRep = this.getPriceRatingData();
 		const availabilityRep = this.getAvailabilityReportData();
+		const typesOfRatingReport = this.getAllTypesOfRatingRepor();
+
 		return <React.Fragment>
 			<Layout position={'relative'}>
 				{loading && <div style={{ textAlign: 'center', marginTop: '50px' }}>
@@ -191,10 +293,10 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 								<SpecialDomainRadarChart data={priceRep} />
 							</div>
 						</Grid>}
-						{!loading && <Grid item md={6}>
+						{typesOfRatingReport && <Grid item md={6}>
 							<h3 style={{ textAlign: 'center' }}>Cleanliness, Location, Checkin</h3>
 							<div style={style}>
-								<SimpleLineChart />
+								<SimpleLineChart data={typesOfRatingReport} label="name" dataKey1="cleanliness" dataKey2="location" dataKey3="checkin" />
 							</div>
 						</Grid>}
 						{availabilityRep && <Grid item md={6}>
@@ -203,10 +305,10 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 								<ComposedBarChart data={availabilityRep} />
 							</div>
 						</Grid>}
-						{!loading && <Grid item md={6}>
+						{typesOfRatingReport && <Grid item md={6}>
 							<h3 style={{ textAlign: 'center' }}>Communication, Value, Accuracy</h3>
 							<div style={style}>
-								<SimpleLineChart />
+								<SimpleLineChart data={typesOfRatingReport} label="name" dataKey1="communication" dataKey2="value" dataKey3="accuracy" />
 							</div>
 						</Grid>}
 					</Grid>
