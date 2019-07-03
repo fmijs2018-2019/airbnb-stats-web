@@ -35,6 +35,7 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 		};
 		this.onSelect = this.onSelect.bind(this);
 		this.getReportsByNgId = this.getReportsByNgId.bind(this);
+		this.getTotalRatingData = this.getTotalRatingData.bind(this);
 	}
 
 	componentDidMount() {
@@ -49,14 +50,13 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 	}
 
 	getReportsByNgId(id: number) {
-		this.setState({ loading: false });
+		this.setState({ loading: true });
 
 		var p1 = neighborhoodsApiClient.getAllTypesOfRatingReportsByNgId(id);
 		var p2 = neighborhoodsApiClient.getAvailabilityReportsByNgId(id);
 		var p3 = neighborhoodsApiClient.getPriceReportsByNgId(id);
 
 		Promise.all([p1, p2, p3]).then(([r1, r2, r3]) => {
-			console.log(r1, r2, r3);
 			this.setState({
 				ratingReports: r1,
 				availabilityReports: r2,
@@ -70,6 +70,86 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 		this.getReportsByNgId(ng.id);
 	}
 
+	getTotalRatingData() {
+		const { ratingReports } = this.state;
+		if (ratingReports === null) return undefined;
+
+		const data = [
+			{ name: '0-20', value: ratingReports.totalRating.filter(v => v.rating && v.rating >= 0 && v.rating <= 20).reduce((r, c) => r + c.count, 0), fill: '#8884d8' },
+			{ name: '21-40', value: ratingReports.totalRating.filter(v => v.rating && v.rating >= 21 && v.rating <= 40).reduce((r, c) => r + c.count, 0), fill: '#83a6ed' },
+			{ name: '41-60', value: ratingReports.totalRating.filter(v => v.rating && v.rating >= 41 && v.rating <= 60).reduce((r, c) => r + c.count, 0), fill: '#8dd1e1' },
+			{ name: '61-80', value: ratingReports.totalRating.filter(v => v.rating && v.rating >= 61 && v.rating <= 80).reduce((r, c) => r + c.count, 0), fill: '#82ca9d' },
+			{ name: '81-100', value: ratingReports.totalRating.filter(v => v.rating && v.rating >= 81 && v.rating <= 100).reduce((r, c) => r + c.count, 0), fill: '#a4de6c' },
+			{ name: 'unknow', value: ratingReports.totalRating.filter(v => !v.rating).reduce((r, c) => r + c.count, 0), fill: '#ffc658' }
+		];
+		return data;
+	}
+
+	getPriceRatingData() {
+		const { priceReports } = this.state;
+		if (priceReports === null) return undefined;
+
+		let fullMark = Math.max(priceReports.avgDailyPrice, priceReports.avgMonthlyPrice, priceReports.avgWeaklyPrice) + 100;
+		fullMark = Math.round(fullMark);
+		const data = [
+			{
+				label: 'Avg. daily price', value: Math.round(priceReports.avgDailyPrice), fullMark,
+			},
+			{
+				label: 'Avg. monthly price', value: Math.round(priceReports.avgMonthlyPrice), fullMark,
+			},
+			{
+				label: 'Avg. weekly price', value: Math.round(priceReports.avgWeaklyPrice), fullMark,
+			}
+		];
+		return data;
+	}
+
+	getAvailabilityReportData() {
+		const { availabilityReports } = this.state;
+		if (availabilityReports === null) return undefined;
+
+		const data = [
+			{
+				name: '0-30', value: availabilityReports.availability.filter(v => v.days && v.days >= 0 && v.days <= 30).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '31-60', value: availabilityReports.availability.filter(v => v.days && v.days >= 31 && v.days <= 60).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '61-90', value: availabilityReports.availability.filter(v => v.days && v.days >= 61 && v.days <= 90).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '91-120', value: availabilityReports.availability.filter(v => v.days && v.days >= 91 && v.days <= 120).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '121-150', value: availabilityReports.availability.filter(v => v.days && v.days >= 121 && v.days <= 150).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '151-180', value: availabilityReports.availability.filter(v => v.days && v.days >= 151 && v.days <= 180).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '181-210', value: availabilityReports.availability.filter(v => v.days && v.days >= 181 && v.days <= 210).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '211-240', value: availabilityReports.availability.filter(v => v.days && v.days >= 211 && v.days <= 240).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '241-270', value: availabilityReports.availability.filter(v => v.days && v.days >= 241 && v.days <= 270).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '271-300', value: availabilityReports.availability.filter(v => v.days && v.days >= 271 && v.days <= 300).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '301-330', value: availabilityReports.availability.filter(v => v.days && v.days >= 301 && v.days <= 330).reduce((r, c) => r + c.count, 0)
+			},
+			{
+				name: '331-365', value: availabilityReports.availability.filter(v => v.days && v.days >= 331 && v.days <= 365).reduce((r, c) => r + c.count, 0)
+			},
+		];
+		return data;
+	}
+
 	render() {
 		const style: any = {
 			boxSizing: 'border-box',
@@ -81,6 +161,9 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 
 		const { neighborhoods, loading } = this.state;
 
+		const ratingRep = this.getTotalRatingData();
+		const priceRep = this.getPriceRatingData();
+		const availabilityRep = this.getAvailabilityReportData();
 		return <React.Fragment>
 			<Layout position={'relative'}>
 				{loading && <div style={{ textAlign: 'center', marginTop: '50px' }}>
@@ -96,36 +179,36 @@ class ReportsScene extends React.Component<IReportSceneProps, IReportSceneStateP
 						justify="center"
 						alignItems="center"
 					>
-						<Grid item md={6}>
-							<div></div>
+						{ratingRep && <Grid item md={6}>
+							<h3 style={{ textAlign: 'center' }}>Rating reports</h3>
 							<div style={style}>
-								<SimpleRadialBarChart />
+								<SimpleRadialBarChart data={ratingRep} />
 							</div>
-						</Grid>
-						<Grid item md={6}>
-							<div></div>
+						</Grid>}
+						{priceRep && <Grid item md={6}>
+							<h3 style={{ textAlign: 'center' }}>Price reports</h3>
 							<div style={style}>
-								<SpecialDomainRadarChart />
+								<SpecialDomainRadarChart data={priceRep} />
 							</div>
-						</Grid>
-						<Grid item md={6}>
-							<div></div>
-							<div style={style}>
-								<SimpleLineChart />
-							</div>
-						</Grid>
-						<Grid item md={6}>
-							<div></div>
-							<div style={style}>
-								<ComposedBarChart />
-							</div>
-						</Grid>
-						<Grid item md={6}>
-							<div></div>
+						</Grid>}
+						{!loading && <Grid item md={6}>
+							<h3 style={{ textAlign: 'center' }}>Cleanliness, Location, Checkin</h3>
 							<div style={style}>
 								<SimpleLineChart />
 							</div>
-						</Grid>
+						</Grid>}
+						{availabilityRep && <Grid item md={6}>
+							<h3 style={{ textAlign: 'center' }}>Availability reports</h3>
+							<div style={style}>
+								<ComposedBarChart data={availabilityRep} />
+							</div>
+						</Grid>}
+						{!loading && <Grid item md={6}>
+							<h3 style={{ textAlign: 'center' }}>Communication, Value, Accuracy</h3>
+							<div style={style}>
+								<SimpleLineChart />
+							</div>
+						</Grid>}
 					</Grid>
 				</div>}
 			</Layout >

@@ -12,13 +12,19 @@ const data = [
 	{ name: 'unknow', uv: 6.67, fill: '#ffc658' }
 ];
 
-export default () => {
+export interface IChartFillData {
+	name: string,
+	value: number,
+	fill: string,
+}
+
+export default (props: { data: IChartFillData[] }) => {
 	return (
 		<ResponsiveContainer>
-			<RadialBarChart data={data} margin={{
+			<RadialBarChart data={props.data} margin={{
 				top: 20, right: 20, bottom: 20, left: 20,
 			}}>
-				<RadialBar label={{ position: 'insideStart', fill: '#fff' }} background dataKey='uv' />
+				<RadialBar label={{ position: 'insideStart', fill: '#fff' }} background dataKey='value' />
 				<Legend iconSize={10} width={100} verticalAlign="middle" layout="horizontal" align="right" />
 			</RadialBarChart>
 		</ResponsiveContainer>

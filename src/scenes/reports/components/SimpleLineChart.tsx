@@ -27,7 +27,18 @@ const data = [
 	},
 ];
 
-export default class SimpleLineChart extends PureComponent {
+export interface ITripleLineChartProps {
+	data1: ILineChartData[],
+	data2: ILineChartData[],
+	data3: ILineChartData[],
+}
+
+export interface ILineChartData {
+	name: string;
+	value: number;
+}
+
+export default class SimpleLineChart extends PureComponent<{}> {
 
 	render() {
 		return (
