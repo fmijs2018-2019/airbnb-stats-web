@@ -22,9 +22,9 @@ const styles = (theme: Theme) => createStyles({
 	}
 });
 
-interface IDrawerProps extends WithStyles<typeof styles> { }
+export interface IDrawerProps extends WithStyles<typeof styles> { }
 
-interface IDrawerState {
+export interface IDrawerState {
 	open: boolean
 }
 

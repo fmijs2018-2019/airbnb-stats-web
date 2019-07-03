@@ -1,13 +1,11 @@
 import DeckGL, { IconLayer, GeoJsonLayer } from 'deck.gl';
 import { StaticMap, ViewState, FlyToInterpolator, TransitionInterpolator } from 'react-map-gl';
-import { connect } from 'react-redux';
+import { connect, MapStateToPropsFactory, MapStateToProps } from 'react-redux';
 import './DashboardScene.css';
 import mapMarker from './utils/map_marker.png';
 import _ from 'lodash';
 import NeighTooltip, { INeighTooltipProps } from './components/NeighTooltip';
 import NgReportsPanel from './components/NgReportsPanel';
-import ListingInfoPanel from './components/ListingInfoPanel';
-import { PlaceRounded } from '@material-ui/icons';
 import { IListingDetailed } from '../../models/listings/Listing';
 import { INeighborhoodDetailed, INeighborhoodReport, INeighborhood } from '../../models/neighborhoods/neighborhood';
 import { IListingLocation } from '../../models/listings/ListingLocation';
@@ -28,7 +26,6 @@ interface IViewState extends ViewState {
 }
 
 interface DashBoardSceneStateProps {
-    selectedListing: IListingDetailed | null
     locations: _.Dictionary<IListingLocation[]> | null;
     neighborhoods: _.Dictionary<INeighborhoodDetailed> | null;
     allReports: _.Dictionary<INeighborhoodReport> | null;
@@ -46,14 +43,7 @@ interface DashBoardSceneState {
     selectedNgId: number | null,
     hoveredNgId: number | null,
     tooltipInfo: INeighTooltipProps | null,
-    placeMarkerInfo: IPlaceMarkerProps | null,
     showAllGeoJsons: boolean,
-    cursor: string
-}
-
-interface IPlaceMarkerProps {
-    x: number,
-    y: number
 }
 
 interface DashBoardSceneProps extends DashBoardSceneStateProps, DashBardSceneActionsProps {
@@ -78,26 +68,24 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             selectedNgId: null,
             hoveredNgId: null,
             tooltipInfo: null,
-            placeMarkerInfo: null,
             showAllGeoJsons: true,
-            cursor: 'grab',
         }
     }
 
     componentDidMount() {
         !this.props.locations && this.props.fetchLocations();
         !this.props.neighborhoods && this.props.fetchNeighborhoodsDetailed();
-        !this.props.allReports && this.props.fetchAllReports();
+		!this.props.allReports && this.props.fetchAllReports();
     }
 
     getLayers = () => {
         const { hoveredNgId, selectedNgId } = this.state;
         const { locations, neighborhoods } = this.props;
 
-        const iconLayer = locations && new IconLayer({
+        const iconLayer = selectedNgId && locations && new IconLayer({
             id: `icon-layer`,
             pickable: true,
-            data: selectedNgId ? locations[selectedNgId] : [],
+            data: locations[selectedNgId],
             iconAtlas: mapMarker,
             iconMapping: {
                 marker: {
@@ -108,17 +96,14 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     "mask": true
                 }
             },
-            onClick: this.listingClickHandler,
-            onHover: this.listingHoverHandler,
             sizeScale: 4,
             getPosition: (d: IListingLocation) => [d.lon, d.lat],
             getIcon: () => 'marker',
             getSize: () => 7,
             getColor: [247, 19, 72, 200],
-            visible: selectedNgId,
         });
 
-        const geoJsonAllLayer = neighborhoods && new GeoJsonLayer({
+        const geoJsonAllLayer = this.state.showAllGeoJsons && neighborhoods && new GeoJsonLayer({
             id: 'geojson-all-layer',
             data: _.map(neighborhoods, 'geoJson'),
             pickable: true,
@@ -129,8 +114,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             getLineColor: [255, 255, 255, 255],
             getLineWidth: 40,
             onHover: this.ngHoverHandler,
-            onClick: this.ngClickHandler,
-            visible: this.state.showAllGeoJsons
+            onClick: this.ngClickHandler
         });
 
         const selectedNgLayer = neighborhoods && selectedNgId && new GeoJsonLayer({
@@ -141,8 +125,7 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             extruded: false,
             lineJointRounded: true,
             getLineColor: [255, 255, 255, 150],
-            getLineWidth: 10,
-            visible: selectedNgId
+            getLineWidth: 10
         });
 
         const hoveredNgLayer = hoveredNgId && neighborhoods && new GeoJsonLayer({
@@ -180,21 +163,6 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
             this.setNeighborhood(ngId);
         }
     };
-
-    listingHoverHandler = (pickingInfo: { x: number, y: number, picked: boolean }, event: any) => {
-        if (pickingInfo.picked) {
-            const x = pickingInfo.x - 12;
-            const y = pickingInfo.y - 29;
-            this.setState({ placeMarkerInfo: { x, y }, cursor: 'pointer' });
-        } else {
-            this.setState({ placeMarkerInfo: null, cursor: 'grab' });
-        }
-    };
-
-    listingClickHandler = (pickingInfo: any) => {
-        const id = pickingInfo && pickingInfo.object && pickingInfo.object.id;
-        this.props.fetchListingDetailed(id);
-    }
 
     onViewStateChange = ({ viewState }: any) => {
         this.setState({ viewState });
@@ -256,8 +224,8 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
     }
 
     render() {
-        const { tooltipInfo, placeMarkerInfo, cursor } = this.state;
-        const { neighborhoods, locations, selectedListing } = this.props;
+		console.log('render');
+        const { tooltipInfo } = this.state;
 
         const neigh = this.getSelectedNeighborhood();
         const ngReport = this.getNgReports(neigh);
@@ -270,14 +238,11 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
                     layers={this.getLayers()}
                     controller={true}
                     onViewStateChange={this.onViewStateChange}
-                    getCursor={() => cursor}
                     useDevicePixels={false}>
                     <StaticMap mapStyle="mapbox://styles/mapbox/dark-v9" width="100%" height="100%" mapboxApiAccessToken={MAPBOX_ACCESS_TOKEN} />
                 </DeckGL>
                 {tooltipInfo && <NeighTooltip {...tooltipInfo} />}
-                {placeMarkerInfo && <div style={{ position: 'absolute', top: placeMarkerInfo.y, left: placeMarkerInfo.x, zIndex: 99999, color: '#f9a9b4' }}><PlaceRounded color="inherit" /></div>}
-                {selectedListing && <ListingInfoPanel listing={selectedListing} onClose={this.closeListingPanelHandler} />}
-                {ngReport && !selectedListing && <NgReportsPanel listingsCount={listingsCount} ng={ngReport} onClose={this.closeReportsPanelHandler} />}
+                {ngReport && <NgReportsPanel listingsCount={listingsCount} ng={ngReport} onClose={this.closeReportsPanelHandler} />}
             </Layout>
         );
     }
@@ -287,8 +252,7 @@ const mapStateToProps = (state: IApplicationState) => {
     return {
         locations: state.listings.locations,
         neighborhoods: state.neighborhoods.detailedList,
-        allReports: state.neighborhoods.allReports,
-        selectedListing: state.listings.item,
+        allReports: state.neighborhoods.allReports
 	};
 };
 
@@ -299,4 +263,4 @@ const mapDispatchToProps = (dispatch: any) => ({
     fetchListingDetailed: (id: number | null) => dispatch(fetchListingDetailed(id)),
 });
 
-export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps>(mapStateToProps as any, mapDispatchToProps)(DashBoardScene);
+export default connect<DashBoardSceneStateProps, DashBardSceneActionsProps, {}>(mapStateToProps as any, mapDispatchToProps)(DashBoardScene);

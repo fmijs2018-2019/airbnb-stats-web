@@ -158,7 +158,7 @@ class ListingsScene extends React.Component<IListingsSceneProps, IListingSceneSt
             invalidFilter = true;
         }
 
-        if (toDate && fromDate && toDate < fromDate) {
+        if (toDate && fromDate && fromDate > toDate) {
             this.props.enqueueSnackbar('Crossing Dates!', { variant: 'error', autoHideDuration: 4000 });
             invalidFilter = true;
         }
@@ -168,7 +168,8 @@ class ListingsScene extends React.Component<IListingsSceneProps, IListingSceneSt
             invalidFilter = true;
         }
 
-        if (fromPrice && toPrice && toPrice < fromPrice) {
+        if (fromPrice && toPrice && fromPrice > toPrice) {
+			console.log(fromPrice, toPrice);
             this.props.enqueueSnackbar('Crossing Prices!', { variant: 'error', autoHideDuration: 4000 });
             invalidFilter = true;
         }

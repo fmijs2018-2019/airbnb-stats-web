@@ -1,5 +1,5 @@
 import httpClient from './httpClient';
-import { INeighborhoodDetailed, IReportsData, INeighborhoodReport } from '../models/neighborhoods/neighborhood';
+import { INeighborhoodDetailed, IReportsData, INeighborhoodReport, INeighborhood } from '../models/neighborhoods/neighborhood';
 
 class neighborhoodsApi {
     getNeighborhoodsDetailed() {
@@ -12,7 +12,11 @@ class neighborhoodsApi {
 
     getAllReports() {
         return httpClient.get<INeighborhoodReport[]>('http://localhost:8080/neighborhoods/reports');
-    }
+	}
+	
+	getNeighborhoodsSimple(){
+		return httpClient.get<INeighborhood[]>('htttp://localhost:8080/neighborhoods/simple')
+	}
 }
 
 const neighborhoodsApiClient = new neighborhoodsApi();

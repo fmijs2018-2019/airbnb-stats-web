@@ -18,7 +18,7 @@ const data02 = [{ name: 'A1', value: 100 },
 { name: 'D2', value: 50 }]
 
 interface IProps {
-    data: ITypeReport[],
+    data?: ITypeReport[],
 }
 
 // listings count by room types and by ng

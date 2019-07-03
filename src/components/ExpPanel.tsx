@@ -13,7 +13,8 @@ const styles = createStyles({
     },
     panelDetails: {
         maxHeight: '150px',
-        overflowY: 'auto'
+		overflowY: 'auto',
+		width: '100%',
     }
 })
 

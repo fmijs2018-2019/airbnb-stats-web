@@ -1,44 +1,80 @@
 import * as React from 'react';
 import Layout from '../../Layout';
-import { Grid, Theme, createStyles, WithStyles, Paper, withStyles } from '@material-ui/core';
+import { Theme, createStyles, WithStyles, withStyles, Grid } from '@material-ui/core';
+import SimpleRadialBarChart from './components/SimpleRadialBarChart';
+import SpecialDomainRadarChart from './components/SpecialDomainRadarChart';
+import ComposedBarChart from './components/ComposedBarChart';
+import SimpleLineChart from './components/SimpleLineChart';
 import SideDrawer from './components/SideDrawer';
+import { INeighborhood } from '../../models/neighborhoods/neighborhood';
 
-const styles = (theme: Theme) => createStyles({
-	container: {
-		position: 'relative',
-		top: '50px',
-		flexGrow: 1
-	},
-	paper: {
-		height: 140,
-		width: 100,
-	},
-	control: {
-		padding: theme.spacing.unit * 2,
-	},
-});
+interface IReportSceneStateProps {
+	neighborhoods: INeighborhood[] | null;
+	
+}
 
-interface IReportSceneProps extends WithStyles<typeof styles> { }
+interface IReportSceneProps extends IReportSceneStateProps { }
 
 class ReportsScene extends React.Component<IReportSceneProps> {
+
+	componentDidMount(){
+		
+	}
+
 	render() {
-		const { classes } = this.props;
+		const style: any = {
+			boxSizing: 'border-box',
+			padding: '10px',
+			width: 'auto',
+			height: '500px',
+			backgroundColor: '#fff'
+		};
 
 		return <Layout>
-			<SideDrawer />
-			<Grid container className={classes.container} spacing={16}>
-				<Grid item xs={12}>
-					<Grid container justify="center" spacing={16}>
-						{[0, 1, 2].map(value => (
-							<Grid key={value} item>
-								<Paper className={classes.paper} />
-							</Grid>
-						))}
+			<div>
+				<SideDrawer />
+			</div>
+			<div style={{ marginTop: '20px' }}>
+				<Grid
+					container
+					direction="row"
+					justify="center"
+					alignItems="center"
+				>
+					<Grid item md={6}>
+						<div></div>
+						<div style={style}>
+							<SimpleRadialBarChart />
+						</div>
+					</Grid>
+					<Grid item md={6}>
+						<div></div>
+						<div style={style}>
+							<SpecialDomainRadarChart />
+						</div>
+					</Grid>
+					<Grid item md={6}>
+						<div></div>
+						<div style={style}>
+							<SimpleLineChart />
+						</div>
+					</Grid>
+					<Grid item md={6}>
+						<div></div>
+						<div style={style}>
+							<ComposedBarChart />
+						</div>
+					</Grid>
+					<Grid item md={6}>
+						<div></div>
+						<div style={style}>
+							<SimpleLineChart />
+						</div>
 					</Grid>
 				</Grid>
-			</Grid>
-		</Layout>
+			</div>
+		</Layout >
 	}
 };
 
-export default withStyles(styles)(ReportsScene);
+export default ReportsScene;

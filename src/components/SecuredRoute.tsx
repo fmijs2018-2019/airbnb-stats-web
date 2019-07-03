@@ -53,20 +53,18 @@ export const LoadingScreen = (props: any) => {
 
 export const UnauthorizedScreen = (props: IUnauthorizedScreenProps) => {
 	return (
-		<div style={{ top: '0', bottom: '0', left: '0', right: '0' }}>
-			<img src={amsterdamImg} style={{ minHeight: '100%', minWidth: '100%', position: 'fixed', top: '0', left: '0' }} />
-			<div style={{ minHeight: '100%', minWidth: '100%', position: 'fixed', top: '0', left: '0', backgroundColor: 'rgba(0, 0, 0, 0.85)' }} />
-			<div style={{ textAlign: 'center', fontSize: '70px', position: 'relative', color: 'white', margin: '30px', top: '120px' }}>401 Unauthorized</div>
+		<div>
+			<div style={{ textAlign: 'center', fontSize: '20px', marginTop: '50px'}}>401 Unauthorized</div>
 			<div style={{ display: 'flex', alignItems: 'center' }}>
 				<div style={{ display: 'inline-block', margin: 'auto' }}>
 					<Button
-						style={{ marginRight: '30px', backgroundColor: 'rgba(255, 255, 255, 0.3)', borderColor: 'white', color: 'white', top: '120px' }}
+						style={{ marginRight: '30px', backgroundColor: 'rgba(255, 255, 255, 0.3)'}}
 						variant="outlined"
 						component={(props: any) => <Link to="/dashboard" {...props}></Link>}>
 						Home
 					</Button>
 					<Button
-						style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)', borderColor: 'white', color: 'white', top: '120px' }}
+						style={{ backgroundColor: 'rgba(255, 255, 255, 0.3)'}}
 						variant="outlined" color="primary" onClick={() => props.onSignIn()}>
 						LogIn
 					</Button>

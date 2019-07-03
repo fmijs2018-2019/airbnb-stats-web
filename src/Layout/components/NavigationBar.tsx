@@ -136,8 +136,8 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
             <React.Fragment>
                 <Button className={className} color="inherit" component={(props: any) => <Link to="/dashboard" {...props}>Dashboard</Link>}>Dashboard</Button>
                 <Button className={className} color="inherit" component={(props: any) => <Link to="/listings" {...props}>Listings</Link>}>Listings</Button>
-                {/* <Button className={className} color="inherit" component={(props: any) => <Link to="/reports" {...props}>Reports</Link>}>Reports</Button> */}
-                <Button className={className} color="inherit" component={(props: any) => <Link to="/about" {...props}>About</Link>}>About</Button>
+                <Button className={className} color="inherit" component={(props: any) => <Link to="/reports" {...props}>Reports</Link>}>Reports</Button>
+                {/* <Button className={className} color="inherit" component={(props: any) => <Link to="/about" {...props}>About</Link>}>About</Button> */}
             </React.Fragment>
         );
     }
@@ -159,7 +159,7 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
                         {this.getButtonsList(classes.menuItem)}
                         <div className={classes.grow} />
                         <IconButton style={{ padding: 0, color: 'white', margin: '0 15px' }} target="_black" href="https://github.com/fmijs2018-2019">
-                            <GithubIcon style={{ height: '30px', width: '30px' }} />
+                            <GithubIcon style={{ height: '24px', width: '24px' }} />
                         </IconButton>
                         {idTokenPayload && <Avatar color="inherit" className={classes.avatar} src={idTokenPayload.picture} style={{ color: headerColor }} />}
                         {!isAuth && <Button onClick={onSignIn} className={classes.logInOutBtn} color="inherit">LogIn</Button>}

@@ -25,7 +25,7 @@ export const initialListingsGridState: IListingsGridState = {
     fetchFiltersDataError: null,
     fetchListingsError: null,
     listings: null,
-    pageSize: 5,
+    pageSize: 10,
     currentPage: 0,
     totalCount: 0,
     numberOfPages: 0,
