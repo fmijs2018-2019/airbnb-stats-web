@@ -224,7 +224,6 @@ class DashBoardScene extends React.Component<DashBoardSceneProps, DashBoardScene
     }
 
     render() {
-		console.log('render');
         const { tooltipInfo } = this.state;
 
         const neigh = this.getSelectedNeighborhood();

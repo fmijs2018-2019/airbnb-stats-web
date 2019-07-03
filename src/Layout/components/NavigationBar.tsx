@@ -18,7 +18,6 @@ const styles = (theme: Theme) => createStyles({
     navBar: {
         width: '100%',
         backgroundColor: 'rgba(32, 35, 42, 0.8)',
-        position: 'fixed',
 		height: '56px',
 		top: 0,
         zIndex: 1301,
@@ -95,7 +94,8 @@ const styles = (theme: Theme) => createStyles({
 interface INavigationBarProps extends RouteComponentProps, WithStyles<typeof styles> {
     onSignOut: () => void;
     onSignIn: () => void;
-    isAuth: boolean;
+	isAuth: boolean;
+	position?: 'fixed' | 'absolute' | 'sticky' | 'static' | 'relative';
     idTokenPayload?: IProfilePayload;
 };
 
@@ -143,12 +143,12 @@ class NavigationBar extends React.Component<INavigationBarProps, INavigationBarS
     }
 
     render() {
-        const { classes, isAuth, onSignOut, onSignIn, idTokenPayload } = this.props;
+        const { classes, isAuth, onSignOut, onSignIn, idTokenPayload, position } = this.props;
         const { isDrawerOpen, headerColor } = this.state;
 
         return (
             <React.Fragment>
-                <AppBar className={classes.navBar} position="static" style={{ backgroundColor: headerColor }}>
+                <AppBar className={classes.navBar} position={position || 'fixed'} style={{ backgroundColor: headerColor }}>
                     <Toolbar classes={{ root: classes.toolbar }}>
                         <Typography className={classes.logoText} variant="h6" color="inherit" noWrap>
                             Amsterdam

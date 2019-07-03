@@ -9,20 +9,19 @@ import InboxIcon from '@material-ui/icons/MoveToInbox';
 import MailIcon from '@material-ui/icons/Mail';
 import IconButton from '@material-ui/core/IconButton';
 import { ChevronRight } from '@material-ui/icons';
+import { INeighborhood } from '../../../models/neighborhoods/neighborhood';
 
 const styles = (theme: Theme) => createStyles({
-	list: {
-		width: 250,
-	},
-	openButton: {
-		top: 60
-	},
-	paperRoot: {
-		top: 54
+	root: {
+		zIndex: 1302
 	}
 });
 
-export interface IDrawerProps extends WithStyles<typeof styles> { }
+export interface IDrawerProps extends WithStyles<typeof styles>, IOwnProps { }
+interface IOwnProps {
+	neighborhoods: INeighborhood[];
+	onNgSelect: (ng: INeighborhood) => void;
+}
 
 export interface IDrawerState {
 	open: boolean
@@ -37,48 +36,53 @@ class LeftSideDrawer extends React.Component<IDrawerProps, IDrawerState> {
 		}
 	}
 
-	toggleDrawer = (open: boolean) => () => {
+	toggleDrawer = (value: boolean) => {
 		this.setState({
-			open,
+			open: value,
 		});
 	};
 
+	onSelect = (ng: INeighborhood) => {
+		this.toggleDrawer(false);
+		this.props.onNgSelect(ng);
+	}
+
 	render() {
-		const { classes } = this.props;
+		const { classes, neighborhoods } = this.props;
+		const { open } = this.state;
 
 		const sideList = (
-			<div className={classes.list}>
+			<div>
 				<List>
-					{['Inbox', 'Starred', 'Send email', 'Drafts'].map((text, index) => (
-						<ListItem button key={text}>
-							<ListItemIcon>{index % 2 === 0 ? <InboxIcon /> : <MailIcon />}</ListItemIcon>
-							<ListItemText primary={text} />
+					{neighborhoods.map((ng, index) => (
+						<ListItem button key={'neigh' + index} onClick={() => this.onSelect(ng)}>
+							<ListItemText primary={ng.name} />
 						</ListItem>
-					))}
+						))}
 				</List>
 			</div>
-		);
-
-		return (
-			<div>
-				<IconButton onClick={this.toggleDrawer(true)} className={classes.openButton}>
-					<ChevronRight />
-				</IconButton>
-				<Drawer
-					open={this.state.open}
-					onClose={this.toggleDrawer(false)}
-					classes={{ paper: classes.paperRoot }}>
-					<div
-						tabIndex={0}
-						role="button"
-						onClick={this.toggleDrawer(false)}
-						onKeyDown={this.toggleDrawer(false)}>
-						{sideList}
-					</div>
-				</Drawer>
-			</div >
-		);
-	}
-};
-
-export default withStyles(styles)(LeftSideDrawer);
+				);
+		
+				return (
+			<React.Fragment>
+						<IconButton onClick={() => this.toggleDrawer(true)} >
+							<ChevronRight />
+						</IconButton>
+						<Drawer
+							open={open}
+							onClose={() => this.toggleDrawer(false)}
+							classes={classes as any}
+						>
+							<div
+								tabIndex={0}
+								role="button"
+								onKeyDown={() => this.toggleDrawer(false)}>
+								{sideList}
+							</div>
+						</Drawer>
+					</React.Fragment >
+					);
+				}
+			};
+			
+			export default withStyles(styles)(LeftSideDrawer);

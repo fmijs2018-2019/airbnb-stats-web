@@ -7,7 +7,8 @@ import { IApplicationState } from '../redux/store';
 import { isAuthenticated, clearAuthState } from '../redux/actions/authActions';
 
 interface ILayoutProps {
-    isAuth: boolean;
+	isAuth: boolean;
+	position?: 'fixed' | 'absolute' | 'sticky' | 'static' | 'relative';
     children?: React.ReactNode;
     idTokenPayload?: IProfilePayload;
     clearAuthState: () => void;
@@ -25,11 +26,11 @@ class Layout extends React.Component<ILayoutProps> {
     }
 
     render() {
-        const { isAuth, idTokenPayload, children } = this.props;
+        const { isAuth, idTokenPayload, children, position } = this.props;
         return <React.Fragment>
-            <NavigationBar onSignIn={this.signIn} onSignOut={this.signOut} isAuth={isAuth} idTokenPayload={idTokenPayload}/>
+            <NavigationBar onSignIn={this.signIn} onSignOut={this.signOut} isAuth={isAuth} idTokenPayload={idTokenPayload} position={position}/>
             <main>
-                {this.props.children}
+                {children}
             </main>
         </React.Fragment>;
     }
