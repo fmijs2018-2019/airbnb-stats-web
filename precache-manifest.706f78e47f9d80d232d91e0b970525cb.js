@@ -8,19 +8,19 @@ self.__precacheManifest = [
     "url": "/airbnb-stats-web/static/js/runtime~main.a62400bf.js"
   },
   {
-    "revision": "6fccf7d4a0599187d99d",
-    "url": "/airbnb-stats-web/static/js/main.f1bb053d.chunk.js"
+    "revision": "0c91569321b6fb14e423",
+    "url": "/airbnb-stats-web/static/js/main.a8ec86a6.chunk.js"
   },
   {
     "revision": "92443966ea3f66e1d47c",
     "url": "/airbnb-stats-web/static/js/2.ff8f0719.chunk.js"
   },
   {
-    "revision": "6fccf7d4a0599187d99d",
+    "revision": "0c91569321b6fb14e423",
     "url": "/airbnb-stats-web/static/css/main.d2678423.chunk.css"
   },
   {
-    "revision": "d43bea5b15912415b1103ffbb3baceea",
+    "revision": "0eeb392f78604c4774ad221f85661795",
     "url": "/airbnb-stats-web/index.html"
   }
 ];
