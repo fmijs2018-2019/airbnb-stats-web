@@ -1,6 +1,8 @@
 import * as auth0 from 'auth0-js';
 import { Auth0DecodedHash, AuthorizeOptions } from 'auth0-js';
 
+export const clientBaseUrl = 'http://localhost:3000';
+
 class Auth {
 	auth0: auth0.WebAuth;
 
@@ -10,7 +12,7 @@ class Auth {
 			domain: 'airbnb-stats.eu.auth0.com',
 			audience: 'https://airbnb-stats.eu.auth0.com/userinfo',
 			clientID: 'jz1zd7BI5Lx5UjcU3Ua62XkVPqvZOuND',
-			redirectUri: 'http://localhost:3000/callback',
+			redirectUri:  clientBaseUrl + '/callback',
 			responseType: 'token id_token',
     		scope: 'openid profile email'
 		});
@@ -40,7 +42,7 @@ class Auth {
 
 	signOut() {
 		this.auth0.logout({
-			returnTo: 'http://localhost:3000',
+			returnTo: clientBaseUrl,
 			clientID: 'jz1zd7BI5Lx5UjcU3Ua62XkVPqvZOuND',
 		});
 	}

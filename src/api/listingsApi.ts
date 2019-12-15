@@ -4,13 +4,14 @@ import { IFiltersDataCollections } from '../models/grid/filtersData';
 import { IListingLocation } from '../models/listings/ListingLocation';
 import { IListing, IListingDetailed } from '../models/listings/Listing';
 
+export const apiBaseUrl = 'https://airbnb-api.azurewebsites.net'
 class ListingsApi {
     getLocations() {
-        return httpClient.get<IListingLocation[]>('http://localhost:8080/listings/locations');
+        return httpClient.get<IListingLocation[]>(apiBaseUrl + '/listings/locations');
     }
     
     getFiltersData() {
-        return httpClient.get<IFiltersDataCollections>('http://localhost:8080/listings/filters-data');
+        return httpClient.get<IFiltersDataCollections>(apiBaseUrl + '/listings/filters-data');
     }
 
     getAllListings(skip: number, take: number, ngs?: number[], propTypes?: number[], roomTypes?: number[], fromDate?: string, toDate?: string, fromPrice?: number, toPrice?: number, orderBy?: number) {
@@ -47,11 +48,11 @@ class ListingsApi {
             config.params['to_price'] = toPrice;
         }
 
-        return httpClient.get<{total_count: number, listings: IListing[]}>('http://localhost:8080/listings', config);
+        return httpClient.get<{total_count: number, listings: IListing[]}>(apiBaseUrl + '/listings', config);
     }
 
     getListingDetailed(id: number) {
-        return httpClient.get<IListingDetailed>(`http://localhost:8080/listings/${id}`);
+        return httpClient.get<IListingDetailed>(`${apiBaseUrl}/listings/${id}`);
     }
 }
 
